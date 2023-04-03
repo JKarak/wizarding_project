@@ -11,6 +11,7 @@ Base = declarative_base()
 class User(Base):  # 1
     __tablename__ = 'users'
     id = Column(Integer(), primary_key=True)
+    name = Column(String(100), nullable=False)
     login = Column(String(100), nullable=False)
     key = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)

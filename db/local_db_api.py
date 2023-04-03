@@ -3,6 +3,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import datetime as dt
 import os
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
 
 class DataBaseManager():
     name = os.path.join('db', 'harry_potter_data.db')
@@ -29,6 +32,30 @@ class DataBaseManager():
     @staticmethod
     def forgot_password(user_id):
         user_email = DataBaseManager.session.query(data_base_create.User).get(user_id).email
+        # import necessary packages
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        import smtplib
+        # create message object instance
+        msg = MIMEMultipart()
+        message = "Thank you"
+        # setup the parameters of the message
+        password = "your_password"
+        msg['From'] = "your_address"
+        msg['To'] = "to_address"
+        msg['Subject'] = "Subscription"
+        # add in the message body
+        msg.attach(MIMEText(message, 'plain'))
+        # create server
+        server = smtplib.SMTP('smtp.gmail.com: 587')
+        server.starttls()
+        # Login Credentials for sending the mail
+        server.login(msg['From'], password)
+        # send the message via the server.
+        server.sendmail(msg['From'], msg['To'], msg.as_string())
+        server.quit()
+        print
+        "successfully sent email to %s:" % (msg['To'])
         pass
 
     @staticmethod
