@@ -21,7 +21,7 @@ class DataBaseManager():
             DataBaseManager.session.commit()
             return user_1.id
         else:
-            return 'wrong format of password'
+            return 0
 
     @staticmethod
     def add_avatar(user_id, file_path):
@@ -30,37 +30,55 @@ class DataBaseManager():
         DataBaseManager.session.commit()
 
     @staticmethod
-    def forgot_password(user_id):
-        user_email = DataBaseManager.session.query(data_base_create.User).get(user_id).email
-        # import necessary packages
-        from email.mime.multipart import MIMEMultipart
-        from email.mime.text import MIMEText
-        import smtplib
-        # create message object instance
-        msg = MIMEMultipart()
-        message = "Thank you"
-        # setup the parameters of the message
-        password = "your_password"
-        msg['From'] = "your_address"
-        msg['To'] = "to_address"
-        msg['Subject'] = "Subscription"
-        # add in the message body
-        msg.attach(MIMEText(message, 'plain'))
-        # create server
-        server = smtplib.SMTP('smtp.gmail.com: 587')
-        server.starttls()
-        # Login Credentials for sending the mail
-        server.login(msg['From'], password)
-        # send the message via the server.
-        server.sendmail(msg['From'], msg['To'], msg.as_string())
-        server.quit()
-        print
-        "successfully sent email to %s:" % (msg['To'])
+    def entrance_user(login, key):
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.login == login).filter(
+            data_base_create.User.key == key)
+        if user:
+            return user.id
+        else:
+            return 0
+
+
+    @staticmethod
+    def forgot_password(login, email):
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.login == login).filter(
+            data_base_create.User.email == email)
+        if user:
+            # import necessary packages
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            import smtplib
+            # create message object instance
+            msg = MIMEMultipart()
+            message = "Thank you"
+            # setup the parameters of the message
+            password = "your_password"
+            msg['From'] = "your_address"
+            msg['To'] = "to_address"
+            msg['Subject'] = "Subscription"
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
+            # create server
+            server = smtplib.SMTP('smtp.gmail.com: 587')
+            server.starttls()
+            # Login Credentials for sending the mail
+            server.login(msg['From'], password)
+            # send the message via the server.
+            server.sendmail(msg['From'], msg['To'], msg.as_string())
+            server.quit()
+            print
+            "successfully sent email to %s:" % (msg['To'])
+        else:
+            return 0
         pass
 
     @staticmethod
-    def change_password(user_id, old_password, new_password):
-        user = DataBaseManager.session.query(data_base_create.User).get(user_id)
+    def change_password(login, email, old_password, new_password):
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.login == login).filter(
+            data_base_create.User.email == email)
         if user.key == old_password:
             if DataBaseManager.is_okay(new_password):
                 user.key = new_password

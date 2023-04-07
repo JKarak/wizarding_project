@@ -1,0 +1,39 @@
+@staticmethod
+    def add_user(login, key, email): РЕГИСТРАЦИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ
+        если всё топи топ:
+            return user_1.id (>0)
+        ежели пользователь тупой и не умеет придумывать нормальные пароли (неправильный формат пораля):
+            return 0
+
+    @staticmethod
+    def add_avatar(user_id, file_path): ДОБАВИТЬ АВАТАРКУ ПОЛЬЗОВАТЕЛЮ В ПРОФИЛЬ
+        обновляет информацию в базе данных
+
+    @staticmethod
+    def entrance_user(login, key): ВХОД ПОЛЬЗОВАТЕЛЯ
+       если всё хорошо:
+            return user.id (> 0)
+       если такого пользователя нет, то есть неверный логин или пароль
+            return 0
+
+
+    @staticmethod
+    def forgot_password(login, email): ЕСЛИ ПОЛЬЗОВАТЕЛЬ ТУПОЙ И ЗАБЫЛ ПАРОЛЬ
+        пока нишиша не делает она просто есть
+        по идее если такой пользователь есть правда, то ему отправляется письмо и
+        return 1
+        если такого пользователя нет
+        return 0
+
+
+    @staticmethod
+    def change_password(login, email, old_password, new_password): ЕСЛИ ПОЛЬЗОВАТЕЛЬ РЕШИЛ ПОМЕНЯТЬ ПАРОЛЬ
+
+        если старый пароль совпадает с паролем в базе данных:
+            если новый пароль норм:
+                пароль меняется в базе данных
+                return 'successfully change password'
+            если пароль через одно место:
+                return 'wrong format of password'
+        если неправильный старый пароль
+            return 'wrong old password'
