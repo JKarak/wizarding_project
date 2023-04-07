@@ -16,7 +16,7 @@ class DataBaseManager():
     def add_user(login, key, email):
         date_create = dt.datetime.now().date()
         if DataBaseManager.is_okay(key):
-            user_1 = data_base_create.User(login=login, key=key, email=email, date_create=str(date_create))
+            user_1 = data_base_create.User(login=login, password=key, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
             DataBaseManager.session.commit()
             return user_1.id
@@ -33,7 +33,7 @@ class DataBaseManager():
     def entrance_user(login, key):
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.login == login).filter(
-            data_base_create.User.key == key)
+            data_base_create.User.password == key)
         if user:
             return user.id
         else:
@@ -79,7 +79,7 @@ class DataBaseManager():
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.login == login).filter(
             data_base_create.User.email == email)
-        if user.key == old_password:
+        if user.password == old_password:
             if DataBaseManager.is_okay(new_password):
                 user.key = new_password
                 DataBaseManager.session.commit()
@@ -91,6 +91,6 @@ class DataBaseManager():
 
     @staticmethod
     def is_okay(key):
-        if len(key) > 9 and not key.isdigit() and not key.isalpha():
+        if len(key) > 9 and not key.isalnum():
             return True
         return False
