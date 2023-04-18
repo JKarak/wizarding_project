@@ -46,7 +46,7 @@ class FavouriteSpells:
     user_id = Column(Integer(), ForeignKey('users.id'))
     spell_uuid = Column(String(36))
     active = Column(Integer(), unique=False)
-    date = Column(String(100), nullable=Fale)
+    date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_fav")
 
 
