@@ -19,6 +19,8 @@ class User(Base):  # 1
     date_create = Column(String(100), nullable=False)
     potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
     potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
+    spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
+    spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
 
 class FavouritePotions:
     __tablename__ = 'favourite_potions'
@@ -26,6 +28,7 @@ class FavouritePotions:
     user_id = Column(Integer(), ForeignKey('users.id'))
     potion_uuid = Column(String(36))
     active = Column(Integer(), unique=False)
+    date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_fav")
 
 
@@ -34,6 +37,25 @@ class ViewedPotions:
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('users.id'))
     potion_uuid = Column(String(36))
+    date = Column(String(100), nullable=False)
+    user_rel = relationship("User", back_populates="potions_rel_view")
+
+class FavouriteSpells:
+    __tablename__ = 'favourite_spells'
+    id = Column(Integer(), primary_key=True)
+    user_id = Column(Integer(), ForeignKey('users.id'))
+    spell_uuid = Column(String(36))
+    active = Column(Integer(), unique=False)
+    date = Column(String(100), nullable=Fale)
+    user_rel = relationship("User", back_populates="potions_rel_fav")
+
+
+class ViewedSpells:
+    __tablename__ = 'viewed_spells'
+    id = Column(Integer(), primary_key=True)
+    user_id = Column(Integer(), ForeignKey('users.id'))
+    spell_uuid = Column(String(36))
+    date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_view")
 
 

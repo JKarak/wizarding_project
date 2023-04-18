@@ -37,3 +37,10 @@
                 return 'wrong format of password'
         если неправильный старый пароль
             return 'wrong old password'
+
+    @staticmethod
+    def add_to_favourite_spell(uuid, user_id):
+
+
+    @staticmethod
+    def add_to_favourite_potion(uuid, user_id):
