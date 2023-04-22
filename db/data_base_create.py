@@ -16,10 +16,10 @@ class User(Base):  # 1
     email = Column(String(100), nullable=False)
     avatar_file = Column(String(200), default='0')
     date_create = Column(String(100), nullable=False)
-    #potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
-    #potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
-    #spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
-    #spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
+    potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
+    potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
+    spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
+    spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
 
 class FavouritePotions(Base):
     __tablename__ = 'favourite_potions'
@@ -46,7 +46,7 @@ class FavouriteSpells(Base):
     spell_uuid = Column(String(36))
     active = Column(Integer(), unique=False)
     date = Column(String(100), nullable=False)
-    user_rel = relationship("User", back_populates="potions_rel_fav")
+    user_rel = relationship("User", back_populates="spells_rel_fav")
 
 
 class ViewedSpells(Base):
@@ -55,7 +55,7 @@ class ViewedSpells(Base):
     user_id = Column(Integer(), ForeignKey('users.id'))
     spell_uuid = Column(String(36))
     date = Column(String(100), nullable=False)
-    user_rel = relationship("User", back_populates="potions_rel_view")
+    user_rel = relationship("User", back_populates="spells_rel_view")
 
 
 

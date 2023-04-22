@@ -39,7 +39,7 @@ class DataBaseManager():
         ash = hashlib.md5(ash.encode())
         ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.password_login_hash == ash)
+            data_base_create.User.password_login_hash == ash).one()
         if user:
             return user.id
         else:
