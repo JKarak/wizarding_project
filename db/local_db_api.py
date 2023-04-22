@@ -39,9 +39,9 @@ class DataBaseManager():
         ash = hashlib.md5(ash.encode())
         ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.password_login_hash == ash).one()
-        if user:
-            return user.id
+            data_base_create.User.password_login_hash == ash)
+        if user is not None:
+            return user.one().id
         else:
             return 0
 
@@ -119,10 +119,10 @@ class DataBaseManager():
     def all_favourite(user_id):
         fav_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
             data_base_create.FavouriteSpells.user_id == user_id).filter(
-            data_base_create.FavouriteSpells.active == 1)
+            data_base_create.FavouriteSpells.active == 1).all()
         fav_potions = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
             data_base_create.FavouritePotions.user_id == user_id).filter(
-            data_base_create.FavouritePotions.active == 1)
+            data_base_create.FavouritePotions.active == 1).all()
         a = fav_potions + fav_spells
         a = sorted(a, key=lambda x: x.date)
         for i in range(len(a)):
@@ -136,7 +136,7 @@ class DataBaseManager():
     def potions_favourite(user_id):
         a = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
             data_base_create.FavouritePotions.user_id == user_id).filter(
-            data_base_create.FavouritePotions.active == 1)
+            data_base_create.FavouritePotions.active == 1).all()
         a = sorted(a, key=lambda x: x.date)
         for i in range(len(a)):
             a[i] = a[i].potion_uuid
@@ -146,7 +146,7 @@ class DataBaseManager():
     def spells_favourite(user_id):
         a = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
             data_base_create.FavouriteSpells.user_id == user_id).filter(
-            data_base_create.FavouriteSpells.active == 1)
+            data_base_create.FavouriteSpells.active == 1).all()
         a = sorted(a, key=lambda x: x.date)
         for i in range(len(a)):
             a[i] = a[i].spell_uuid
