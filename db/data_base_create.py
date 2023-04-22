@@ -12,8 +12,7 @@ class User(Base):  # 1
     __tablename__ = 'users'
     id = Column(Integer(), primary_key=True)
     name = Column(String(100), nullable=False)
-    login = Column(String(100), nullable=False)
-    password = Column(String(100), nullable=False)
+    password_login_hash = Column(String(128), nullable=False)
     email = Column(String(100), nullable=False)
     avatar_file = Column(String(200), default='0')
     date_create = Column(String(100), nullable=False)
@@ -22,7 +21,7 @@ class User(Base):  # 1
     #spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
     #spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
 
-class FavouritePotions:
+class FavouritePotions(Base):
     __tablename__ = 'favourite_potions'
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('users.id'))
@@ -32,7 +31,7 @@ class FavouritePotions:
     user_rel = relationship("User", back_populates="potions_rel_fav")
 
 
-class ViewedPotions:
+class ViewedPotions(Base):
     __tablename__ = 'viewed_potions'
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('users.id'))
@@ -40,7 +39,7 @@ class ViewedPotions:
     date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_view")
 
-class FavouriteSpells:
+class FavouriteSpells(Base):
     __tablename__ = 'favourite_spells'
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('users.id'))
@@ -50,13 +49,15 @@ class FavouriteSpells:
     user_rel = relationship("User", back_populates="potions_rel_fav")
 
 
-class ViewedSpells:
+class ViewedSpells(Base):
     __tablename__ = 'viewed_spells'
     id = Column(Integer(), primary_key=True)
     user_id = Column(Integer(), ForeignKey('users.id'))
     spell_uuid = Column(String(36))
     date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_view")
+
+
 
 
 if __name__ == '__main__':

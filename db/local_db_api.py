@@ -6,6 +6,7 @@ import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+import hashlib
 
 class DataBaseManager():
     name = os.path.join('db', 'harry_potter_data.db')
@@ -16,7 +17,10 @@ class DataBaseManager():
     def add_user(login, key, email):
         date_create = dt.datetime.now().date()
         if DataBaseManager.is_okay(key):
-            user_1 = data_base_create.User(login=login, password=key, email=email, date_create=str(date_create))
+            ash = login + key
+            ash = hashlib.md5(ash.encode())
+            ash = ash.hexdigest()
+            user_1 = data_base_create.User(password_login_hash=ash, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
             DataBaseManager.session.commit()
             return user_1.id
@@ -31,9 +35,11 @@ class DataBaseManager():
 
     @staticmethod
     def entrance_user(login, key):
+        ash = login + key
+        ash = hashlib.md5(ash.encode())
+        ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.login == login).filter(
-            data_base_create.User.password == key).one()
+            data_base_create.User.password_login_hash == ash)
         if user:
             return user.id
         else:
@@ -43,7 +49,6 @@ class DataBaseManager():
     @staticmethod
     def forgot_password(login, email):
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.login == login).filter(
             data_base_create.User.email == email)
         if user:
             # create message object instance
@@ -72,12 +77,17 @@ class DataBaseManager():
 
     @staticmethod
     def change_password(login, email, old_password, new_password):
+        ash = login + old_password
+        ash = hashlib.md5(ash.encode())
+        ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.login == login).filter(
             data_base_create.User.email == email)
-        if user.password == old_password:
+        if user.password_login_hash == ash:
             if DataBaseManager.is_okay(new_password):
-                user.key = new_password
+                ash_2 = login + new_password
+                ash_2 = hashlib.md5(ash_2.encode())
+                ash_2 = ash_2.hexdigest()
+                user.password_login_hash = ash_2
                 DataBaseManager.session.commit()
                 return 'successfully change password'
             else:
@@ -98,46 +108,46 @@ class DataBaseManager():
         DataBaseManager.session.add(fs)
         DataBaseManager.session.commit()
 
-    # @staticmethod
-    # def add_to_favourite_potion(uuid, user_id):
-    #     date = dt.datetime.now().date()
-    #     fp = data_base_create.FavouritePotions(user_id=user_id, potion_uuid=uuid, active=1, date=str(date))
-    #     DataBaseManager.session.add(fp)
-    #     DataBaseManager.session.commit()
-    #
-    # @staticmethod
-    # def all_favourite(user_id):
-    #     fav_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
-    #         data_base_create.FavouriteSpells.user_id == user_id).filter(
-    #         data_base_create.FavouriteSpells.active == 1)
-    #     fav_potions = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
-    #         data_base_create.FavouritePotions.user_id == user_id).filter(
-    #         data_base_create.FavouritePotions.active == 1)
-    #     a = fav_potions + fav_spells
-    #     a = sorted(a, key=lambda x: x.date)
-    #     for i in range(len(a)):
-    #         if isinstance(a[i], data_base_create.FavouriteSpells):
-    #             a[i] = a[i].spell_uuid
-    #         else:
-    #             a[i] = a[i].potion_uuid
-    #     return a
-    #
-    # @staticmethod
-    # def potions_favourite(user_id):
-    #     a = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
-    #         data_base_create.FavouritePotions.user_id == user_id).filter(
-    #         data_base_create.FavouritePotions.active == 1)
-    #     a = sorted(a, key=lambda x: x.date)
-    #     for i in range(len(a)):
-    #         a[i] = a[i].potion_uuid
-    #     return a
-    #
-    # @staticmethod
-    # def spells_favourite(user_id):
-    #     a = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
-    #         data_base_create.FavouriteSpells.user_id == user_id).filter(
-    #         data_base_create.FavouriteSpells.active == 1)
-    #     a = sorted(a, key=lambda x: x.date)
-    #     for i in range(len(a)):
-    #         a[i] = a[i].spell_uuid
-    #     return a
+    @staticmethod
+    def add_to_favourite_potion(uuid, user_id):
+        date = dt.datetime.now().date()
+        fp = data_base_create.FavouritePotions(user_id=user_id, potion_uuid=uuid, active=1, date=str(date))
+        DataBaseManager.session.add(fp)
+        DataBaseManager.session.commit()
+
+    @staticmethod
+    def all_favourite(user_id):
+        fav_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+            data_base_create.FavouriteSpells.user_id == user_id).filter(
+            data_base_create.FavouriteSpells.active == 1)
+        fav_potions = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
+            data_base_create.FavouritePotions.user_id == user_id).filter(
+            data_base_create.FavouritePotions.active == 1)
+        a = fav_potions + fav_spells
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            if isinstance(a[i], data_base_create.FavouriteSpells):
+                a[i] = a[i].spell_uuid
+            else:
+                a[i] = a[i].potion_uuid
+        return a
+
+    @staticmethod
+    def potions_favourite(user_id):
+        a = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
+            data_base_create.FavouritePotions.user_id == user_id).filter(
+            data_base_create.FavouritePotions.active == 1)
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            a[i] = a[i].potion_uuid
+        return a
+
+    @staticmethod
+    def spells_favourite(user_id):
+        a = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+            data_base_create.FavouriteSpells.user_id == user_id).filter(
+            data_base_create.FavouriteSpells.active == 1)
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            a[i] = a[i].spell_uuid
+        return a
