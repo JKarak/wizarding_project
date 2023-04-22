@@ -6,6 +6,7 @@ import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
+import hashlib
 
 class DataBaseManager():
     name = os.path.join('db', 'harry_potter_data.db')
@@ -16,7 +17,10 @@ class DataBaseManager():
     def add_user(login, key, email):
         date_create = dt.datetime.now().date()
         if DataBaseManager.is_okay(key):
-            user_1 = data_base_create.User(login=login, password=key, email=email, date_create=str(date_create))
+            ash = login + key
+            ash = hashlib.md5(ash.encode())
+            ash = ash.hexdigest()
+            user_1 = data_base_create.User(password_login_hash=ash, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
             DataBaseManager.session.commit()
             return user_1.id
@@ -31,9 +35,11 @@ class DataBaseManager():
 
     @staticmethod
     def entrance_user(login, key):
+        ash = login + key
+        ash = hashlib.md5(ash.encode())
+        ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.login == login).filter(
-            data_base_create.User.password == key)
+            data_base_create.User.password_login_hash == ash)
         if user:
             return user.id
         else:
@@ -43,7 +49,6 @@ class DataBaseManager():
     @staticmethod
     def forgot_password(login, email):
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.login == login).filter(
             data_base_create.User.email == email)
         if user:
             # create message object instance
@@ -72,12 +77,17 @@ class DataBaseManager():
 
     @staticmethod
     def change_password(login, email, old_password, new_password):
+        ash = login + old_password
+        ash = hashlib.md5(ash.encode())
+        ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.login == login).filter(
             data_base_create.User.email == email)
-        if user.password == old_password:
+        if user.password_login_hash == ash:
             if DataBaseManager.is_okay(new_password):
-                user.key = new_password
+                ash_2 = login + new_password
+                ash_2 = hashlib.md5(ash_2.encode())
+                ash_2 = ash_2.hexdigest()
+                user.password_login_hash = ash_2
                 DataBaseManager.session.commit()
                 return 'successfully change password'
             else:

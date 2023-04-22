@@ -12,8 +12,7 @@ class User(Base):  # 1
     __tablename__ = 'users'
     id = Column(Integer(), primary_key=True)
     name = Column(String(100), nullable=False)
-    login = Column(String(100), nullable=False)
-    password = Column(String(100), nullable=False)
+    password_login_hash = Column(String(128), nullable=False)
     email = Column(String(100), nullable=False)
     avatar_file = Column(String(200), default='0')
     date_create = Column(String(100), nullable=False)
@@ -57,6 +56,8 @@ class ViewedSpells:
     spell_uuid = Column(String(36))
     date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_view")
+
+
 
 
 if __name__ == '__main__':
