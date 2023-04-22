@@ -33,7 +33,7 @@ class DataBaseManager():
     def entrance_user(login, key):
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.login == login).filter(
-            data_base_create.User.password == key)
+            data_base_create.User.password == key).one()
         if user:
             return user.id
         else:
@@ -98,46 +98,46 @@ class DataBaseManager():
         DataBaseManager.session.add(fs)
         DataBaseManager.session.commit()
 
-    @staticmethod
-    def add_to_favourite_potion(uuid, user_id):
-        date = dt.datetime.now().date()
-        fp = data_base_create.FavouritePotions(user_id=user_id, potion_uuid=uuid, active=1, date=str(date))
-        DataBaseManager.session.add(fp)
-        DataBaseManager.session.commit()
-
-    @staticmethod
-    def all_favourite(user_id):
-        fav_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
-            data_base_create.FavouriteSpells.user_id == user_id).filter(
-            data_base_create.FavouriteSpells.active == 1)
-        fav_potions = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
-            data_base_create.FavouritePotions.user_id == user_id).filter(
-            data_base_create.FavouritePotions.active == 1)
-        a = fav_potions + fav_spells
-        a = sorted(a, key=lambda x: x.date)
-        for i in range(len(a)):
-            if isinstance(a[i], data_base_create.FavouriteSpells):
-                a[i] = a[i].spell_uuid
-            else:
-                a[i] = a[i].potion_uuid
-        return a
-
-    @staticmethod
-    def potions_favourite(user_id):
-        a = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
-            data_base_create.FavouritePotions.user_id == user_id).filter(
-            data_base_create.FavouritePotions.active == 1)
-        a = sorted(a, key=lambda x: x.date)
-        for i in range(len(a)):
-            a[i] = a[i].potion_uuid
-        return a
-
-    @staticmethod
-    def spells_favourite(user_id):
-        a = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
-            data_base_create.FavouriteSpells.user_id == user_id).filter(
-            data_base_create.FavouriteSpells.active == 1)
-        a = sorted(a, key=lambda x: x.date)
-        for i in range(len(a)):
-            a[i] = a[i].spell_uuid
-        return a
+    # @staticmethod
+    # def add_to_favourite_potion(uuid, user_id):
+    #     date = dt.datetime.now().date()
+    #     fp = data_base_create.FavouritePotions(user_id=user_id, potion_uuid=uuid, active=1, date=str(date))
+    #     DataBaseManager.session.add(fp)
+    #     DataBaseManager.session.commit()
+    #
+    # @staticmethod
+    # def all_favourite(user_id):
+    #     fav_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+    #         data_base_create.FavouriteSpells.user_id == user_id).filter(
+    #         data_base_create.FavouriteSpells.active == 1)
+    #     fav_potions = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
+    #         data_base_create.FavouritePotions.user_id == user_id).filter(
+    #         data_base_create.FavouritePotions.active == 1)
+    #     a = fav_potions + fav_spells
+    #     a = sorted(a, key=lambda x: x.date)
+    #     for i in range(len(a)):
+    #         if isinstance(a[i], data_base_create.FavouriteSpells):
+    #             a[i] = a[i].spell_uuid
+    #         else:
+    #             a[i] = a[i].potion_uuid
+    #     return a
+    #
+    # @staticmethod
+    # def potions_favourite(user_id):
+    #     a = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
+    #         data_base_create.FavouritePotions.user_id == user_id).filter(
+    #         data_base_create.FavouritePotions.active == 1)
+    #     a = sorted(a, key=lambda x: x.date)
+    #     for i in range(len(a)):
+    #         a[i] = a[i].potion_uuid
+    #     return a
+    #
+    # @staticmethod
+    # def spells_favourite(user_id):
+    #     a = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+    #         data_base_create.FavouriteSpells.user_id == user_id).filter(
+    #         data_base_create.FavouriteSpells.active == 1)
+    #     a = sorted(a, key=lambda x: x.date)
+    #     for i in range(len(a)):
+    #         a[i] = a[i].spell_uuid
+    #     return a

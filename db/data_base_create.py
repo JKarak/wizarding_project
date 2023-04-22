@@ -17,10 +17,10 @@ class User(Base):  # 1
     email = Column(String(100), nullable=False)
     avatar_file = Column(String(200), default='0')
     date_create = Column(String(100), nullable=False)
-    potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
-    potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
-    spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
-    spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
+    #potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
+    #potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
+    #spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
+    #spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
 
 class FavouritePotions:
     __tablename__ = 'favourite_potions'
