@@ -70,7 +70,7 @@ class DataBaseManager():
             smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
             smtpObj.starttls()
             smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
-            wer = login
+            wer = user.id
             password = wer.generate_random_password()
             m = f"""Ваш новый пароль: {password}\n. Вы сможете поменять его в любой момент. \n\n Не сообщайте никому эти данные в целях безопасности!"""
             subject = 'Новый пароль wizard_world'
@@ -78,9 +78,14 @@ class DataBaseManager():
             msg['Subject'] = Header(subject, 'utf-8')
             smtpObj.sendmail("work_smtp_ofkate@mail.ru", email, msg.as_string())
             smtpObj.quit()
+            ash_2 = login + password
+            ash_2 = hashlib.md5(ash_2.encode())
+            ash_2 = ash_2.hexdigest()
+            user.password_login_hash = ash_2
+            DataBaseManager.session.commit()
+            return 'successfully change password'
         else:
-            return 0
-        pass
+            return 'wrong email'
 
     @staticmethod
     def change_password(login, email, old_password, new_password):
@@ -160,9 +165,17 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def get_user_info(user):
-        pass
+    def get_user_info(user_id):
+        user = DataBaseManager.session.query(data_base_create.User).get(user_id)
+        js = {'id': user.id, 'name': user.name, 'email': user.email, 'avatar': user.avatar_file}
+        return js
 
     @staticmethod
     def get_random_types(num):
-        pass
+        all_types = DataBaseManager.session.query(data_base_create.User).all()
+        random.shuffle(all_types)
+        types = []
+        for i in range(num):
+            types.append((all_types[i].name_of_type, all_types[i].file))
+        return types
+
