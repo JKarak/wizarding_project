@@ -3,7 +3,9 @@ from sqlalchemy import create_engine, MetaData, Table, Integer, String, \
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 engine = create_engine("sqlite:///harry_potter_data.db")
 
 Base = declarative_base()
@@ -57,8 +59,26 @@ class ViewedSpells(Base):
     date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="spells_rel_view")
 
-
+class TypesOfSpells(Base):
+    __tablename__ = 'type_of_spells'
+    id = Column(Integer(), primary_key=True)
+    name_of_type = Column(String(100))
+    file = Column(String(100))
 
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
+    session = Session(bind=engine)
+    type = TypesOfSpells(name_of_type="Charm", file="charms_il.jpg")
+    session.add(type)
+    type = TypesOfSpells(name_of_type="Transfiguration", file='transfiguration_il.jpg')
+    session.add(type)
+    type = TypesOfSpells(name_of_type="DarkCharm", file='DarkCharm_il.jpg')
+    session.add(type)
+    type = TypesOfSpells(name_of_type="Curse", file='curse_il.jpg')
+    session.add(type)
+    type = TypesOfSpells(name_of_type="BindingMagicalContract", file='BindingMagicalContract_il.jpg')
+    session.add(type)
+    type = TypesOfSpells(name_of_type="Vanishment", file='Vanishment_il.jpg')
+    session.add(type)
+    session.commit()

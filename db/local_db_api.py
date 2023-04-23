@@ -1,3 +1,7 @@
+import random
+import string
+from email.header import Header
+
 import db.data_base_create as data_base_create
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -12,6 +16,18 @@ class DataBaseManager():
     name = os.path.join('db', 'harry_potter_data.db')
     engine = create_engine(f"sqlite:///{name}")
     session = Session(bind=engine)
+
+    @staticmethod
+    def generate_random_password(wer):
+        characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
+        length = 8
+        random.shuffle(characters)
+        password = []
+        for i in range(length):
+            password.append(random.choice(characters))
+        random.shuffle(password)
+        new_password = "".join(password) + wer
+        return new_password
 
     @staticmethod
     def add_user(login, key, email):
@@ -40,7 +56,6 @@ class DataBaseManager():
         ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.password_login_hash == ash).all()
-        print(user)
         if user:
             return user[0].id
         else:
@@ -50,28 +65,19 @@ class DataBaseManager():
     @staticmethod
     def forgot_password(login, email):
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.email == email)
+            data_base_create.User.email == email).all()
         if user:
-            # create message object instance
-            msg = MIMEMultipart()
-            message = "Thank you"
-            # setup the parameters of the message
-            password = "your_password"
-            msg['From'] = "your_address"
-            msg['To'] = "to_address"
-            msg['Subject'] = "Сode:"
-            # add in the message body
-            msg.attach(MIMEText(message, 'plain'))
-            # create server
-            server = smtplib.SMTP('smtp.gmail.com: 587')
-            server.starttls()
-            # Login Credentials for sending the mail
-            server.login(msg['From'], password)
-            # send the message via the server.
-            server.sendmail(msg['From'], msg['To'], msg.as_string())
-            server.quit()
-            print
-            "successfully sent email to %s:" % (msg['To'])
+            smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
+            smtpObj.starttls()
+            smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
+            wer = login
+            password = wer.generate_random_password()
+            m = f"""Ваш новый пароль: {password}\n. Вы сможете поменять его в любой момент. \n\n Не сообщайте никому эти данные в целях безопасности!"""
+            subject = 'Новый пароль wizard_world'
+            msg = MIMEText(m, 'plain', 'utf-8')
+            msg['Subject'] = Header(subject, 'utf-8')
+            smtpObj.sendmail("work_smtp_ofkate@mail.ru", email, msg.as_string())
+            smtpObj.quit()
         else:
             return 0
         pass
@@ -152,3 +158,11 @@ class DataBaseManager():
         for i in range(len(a)):
             a[i] = a[i].spell_uuid
         return a
+
+    @staticmethod
+    def get_user_info(user):
+        pass
+
+    @staticmethod
+    def get_random_types(num):
+        pass
