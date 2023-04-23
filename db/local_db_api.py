@@ -44,8 +44,9 @@ class DataBaseManager():
             return 0
 
     @staticmethod
-    def add_avatar(user_id, file_path):
-        user = DataBaseManager.session.query(data_base_create.User).get(user_id)
+    def add_avatar(email, file_path):
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.email == email).one()
         user.avatar_file = file_path
         DataBaseManager.session.commit()
 
