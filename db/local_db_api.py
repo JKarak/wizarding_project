@@ -161,7 +161,8 @@ class DataBaseManager():
 
     @staticmethod
     def get_user_info(user):
-
+        pass
 
     @staticmethod
-    def get_random_types(num, ):
+    def get_random_types(num):
+        pass
