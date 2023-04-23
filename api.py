@@ -1,4 +1,5 @@
 import flask
+import werkzeug
 from flask import Flask, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 from flask import request
@@ -26,12 +27,36 @@ class UserAuth(Resource):
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
-        return jsonify({'user_id': 1, 'user_name': 'Vasya'})
+        return response
 
 
 class UserRegistration(Resource):
     def post(self):
-        json_data = request.get_json()
+        json_data = request.get_json(force=True)
+        login = json_data['login']
+        key = json_data['key']
+        email = json_data['email']
+        if dbm.add_user(login, key, email):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class NewAvatar(Resource):
+    def patch(self, user_id):
+        parse = reqparse.RequestParser()
+        parse.add_argument('file', type=werkzeug.datastructures.FileStorage, location='files')
+        args = parse.parse_args()
+        image_file = args['file']
+        image_file.save(f"data/image/{user_id}.jpg")
+        if dbm.add_user(login, key, email):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
 
 
 class NewsResource(Resource):

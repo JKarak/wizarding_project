@@ -39,9 +39,10 @@ class DataBaseManager():
         ash = hashlib.md5(ash.encode())
         ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.password_login_hash == ash)
-        if user is not None:
-            return user.one().id
+            data_base_create.User.password_login_hash == ash).all()
+        print(user)
+        if user:
+            return user[0].id
         else:
             return 0
 
