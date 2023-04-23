@@ -51,7 +51,33 @@ class NewAvatar(Resource):
         args = parse.parse_args()
         image_file = args['file']
         image_file.save(f"data/image/{user_id}.jpg")
-        if dbm.add_user(login, key, email):
+        if dbm.add_avatar(user_id, image_file):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class ChangePassword(Resource):
+    def patch(self, login):
+        json_data = request.get_json(force=True)
+        email = json_data['email']
+        old_password = json_data['old_password']
+        new_password = json_data['new_password']
+        if dbm.change_password(login, email, old_password, new_password):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class ForgotPassword(Resource):
+    def patch(self, login):
+        json_data = request.get_json(force=True)
+        email = json_data['email']
+        if dbm.forgot_password(login, email):
             response = jsonify({'result': 'ok'})
         else:
             response = jsonify({'result': 'not ok'})
