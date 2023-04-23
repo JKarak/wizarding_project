@@ -85,20 +85,32 @@ class ForgotPassword(Resource):
         return response
 
 
-class NewsResource(Resource):
-    def get(self):
-        return jsonify({
-            'news':
-                []
-            }
-        )
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('title', required=True)
-        parser.add_argument('content', required=True)
-        parser.add_argument('user_id', required=True, type=int)
-        args = parser.parse_args()
-        return jsonify({'id': id})
+class AddToFavouriteSpell(Resource):
+    def post(self, login):
+        json_data = request.get_json(force=True)
+        email = json_data['email']
+        if dbm.forgot_password(login, email):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+# class NewsResource(Resource):
+#     def get(self):
+#         return jsonify({
+#             'news':
+#                 []
+#             }
+#         )
+#     def post(self):
+#         parser = reqparse.RequestParser()
+#         parser.add_argument('title', required=True)
+#         parser.add_argument('content', required=True)
+#         parser.add_argument('user_id', required=True, type=int)
+#         args = parser.parse_args()
+#         return jsonify({'id': id})
 
 
 db_session.global_init("db/blogs.db")
