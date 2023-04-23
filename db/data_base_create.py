@@ -16,7 +16,7 @@ class User(Base):  # 1
     name = Column(String(100), nullable=False)
     password_login_hash = Column(String(128), nullable=False)
     email = Column(String(100), nullable=False)
-    avatar_file = Column(String(200), default='0')
+    avatar_file = Column(String(200), default='avatar_0.jpg')
     date_create = Column(String(100), nullable=False)
     potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
     potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
