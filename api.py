@@ -88,8 +88,8 @@ class ForgotPassword(Resource):
 class AddToFavouriteSpell(Resource):
     def post(self, login):
         json_data = request.get_json(force=True)
-        email = json_data['email']
-        if dbm.forgot_password(login, email):
+        uuid = json_data['email']
+        if dbm.add_to_favourite_spell(uuid, user_id):
             response = jsonify({'result': 'ok'})
         else:
             response = jsonify({'result': 'not ok'})
