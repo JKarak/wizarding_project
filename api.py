@@ -32,24 +32,25 @@ class UserAuth(Resource):
 
 class UserRegistration(Resource):
     def post(self):
-        json_data = request.get_json(force=True)
+        json_data = request.json()
         login = json_data['login']
         key = json_data['key']
         email = json_data['email']
-        if dbm.add_user(login, key, email):
-            response = jsonify({'result': 'ok'})
-        else:
-            response = jsonify({'result': 'not ok'})
-            response.status_code = 404
-        return response
+        print(login, key, email)
+        return json_data
+        # if dbm.add_user(login, key, email):
+        #     response = jsonify({'result': 'ok'})
+        # else:
+        #     response = jsonify({'result': 'not ok'})
+        #     response.status_code = 404
+        # #response = jsonify({'bubu': 'pupu'})
+        # return response
 
 
 class UserInfo(Resource):
-    def get(self):
-        args = parser.parse_args()
-        print(args)
-        if dbm.get_user_info(args.email):
-            response = dbm.get_user_info(args.email)
+    def get(self, email):
+        if dbm.get_user_info(email):
+            response = dbm.get_user_info(email)
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
@@ -138,8 +139,10 @@ class AddToFavouritePotion(Resource):
 
 
 db_session.global_init("db/blogs.db")
-api.add_resource(UserAuth, '/user/registration')
-api.add_resource(NewsResource, '/')
+api.add_resource(UserAuth, '/user/auth')
+api.add_resource(UserRegistration, '/user/registration')
+api.add_resource(UserInfo, '/user/<string:email>/info')
+#api.add_resource(NewsResource, '/')
 app.run()
 
 #http://127.0.0.1:5000/4?title=werty&content=werty&user_id=234
