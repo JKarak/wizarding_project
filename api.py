@@ -86,9 +86,21 @@ class ForgotPassword(Resource):
 
 
 class AddToFavouriteSpell(Resource):
-    def post(self, login):
+    def post(self, user_id):
         json_data = request.get_json(force=True)
-        uuid = json_data['email']
+        uuid = json_data['uuid']
+        if dbm.add_to_favourite_spell(uuid, user_id):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class AddToFavouritePotion(Resource):
+    def post(self, user_id):
+        json_data = request.get_json(force=True)
+        uuid = json_data['uuid']
         if dbm.add_to_favourite_spell(uuid, user_id):
             response = jsonify({'result': 'ok'})
         else:
