@@ -44,6 +44,18 @@ class UserRegistration(Resource):
         return response
 
 
+class UserInfo(Resource):
+    def get(self):
+        args = parser.parse_args()
+        print(args)
+        if dbm.get_user_info(args.email):
+            response = dbm.get_user_info(args.email)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
 class NewAvatar(Resource):
     def patch(self, user_id):
         parse = reqparse.RequestParser()
