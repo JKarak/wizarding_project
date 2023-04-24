@@ -166,8 +166,9 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def get_user_info(user_id):
-        user = DataBaseManager.session.query(data_base_create.User).get(user_id)
+    def get_user_info(email):
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.email == email).one()
         js = {'id': user.id, 'name': user.name, 'email': user.email, 'avatar': user.avatar_file}
         return js
 
