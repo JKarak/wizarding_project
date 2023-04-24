@@ -180,3 +180,20 @@ class DataBaseManager():
             types.append((all_types[i].name_of_type, all_types[i].file))
         return types
 
+    @staticmethod
+    def add_to_viewed_potions(uuid, user_id):
+        date = dt.datetime.now().date()
+        fp = data_base_create.ViewedPotions(user_id=user_id, potion_uuid=uuid, date=str(date))
+        DataBaseManager.session.add(fp)
+        DataBaseManager.session.commit()
+
+    @staticmethod
+    def add_to_viewed_spells(uuid, user_id):
+        date = dt.datetime.now().date()
+        fp = data_base_create.ViewedSpells(user_id=user_id, spell_uuid=uuid, date=str(date))
+        DataBaseManager.session.add(fp)
+        DataBaseManager.session.commit()
+
+
+
+
