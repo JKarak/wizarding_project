@@ -65,6 +65,49 @@ class TypesOfSpells(Base):
     name_of_type = Column(String(100))
     file = Column(String(100))
 
+class Spells(Base):
+    __tablename__ = 'spells'
+    id = Column(Integer(), primary_key=True)
+    uuid = Column(String(36), primary_key=True)
+    name = Column(String(100), nullable=False)
+    incantation = Column(String(100), nullable=False)
+    effect = Column(String(100), nullable=False)
+    canBeVerbal = Column(String(100), nullable=False)
+    type = Column(String(100), nullable=False)
+    light = Column(String(100), nullable=False)
+    creator = Column(String(100), nullable=False)
+
+class Potions(Base):
+    __tablename__ = 'potionss'
+    id = Column(Integer(), primary_key=True)
+    uuid = Column(String(36), nullable=False)
+    name = Column(String(100), nullable=False)
+    effect = Column(String(100), nullable=False)
+    sideEffects = Column(String(100), nullable=False)
+    characteristics = Column(String(100), nullable=False)
+    time = Column(String(100), nullable=False)
+    difficulty = Column(String(100), nullable=False)
+    #ingredients = relationship('IngredientsForPotion', back_populates="pot_rel")
+    ingredients = Column(String(200), nullable=False)
+    inventors = Column(String(200), nullable=False)
+    manufacturer = Column(String(100), nullable=False)
+
+
+'''class Ingredients(Base):
+    __tablename__ = 'ingridients'
+    id = Column(Integer(), primary_key=True)
+    uuid = Column(String(36), nullable=False)
+    name = Column(String(100), nullable=False)
+    potions = relationship('IngredientsForPotion', back_populates="ingr_rel")
+
+class IngredientsForPotion(Base):
+    __tablename__ = 'ingridients_for_potion'
+    id = Column(Integer(), primary_key=True)
+    potion_uuid = Column(String(36), ForeignKey('potion.id'))
+    ingr_uuid = Column(String(100), ForeignKey('ingredients.id'))
+    pot_rel = relationship("Potions", back_populates="potions")
+    ingr_rel = relationship("Ingredients", back_populates="ingredients")'''
+
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

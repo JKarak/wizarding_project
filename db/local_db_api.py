@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 import hashlib
+import requests
 
 class DataBaseManager():
     name = os.path.join('db', 'harry_potter_data.db')
@@ -168,9 +169,13 @@ class DataBaseManager():
     @staticmethod
     def get_user_info(email):
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.email == email).one()
-        js = {'id': user.id, 'name': user.name, 'email': user.email, 'avatar': user.avatar_file}
-        return js
+            data_base_create.User.email == email).all()
+        if user:
+            user = user[0]
+            js = {'id': user.id, 'name': user.name, 'email': user.email, 'avatar': user.avatar_file}
+            return js
+        else:
+            return 0
 
     @staticmethod
     def get_random_types(num):
@@ -194,6 +199,57 @@ class DataBaseManager():
         fp = data_base_create.ViewedSpells(user_id=user_id, spell_uuid=uuid, date=str(date))
         DataBaseManager.session.add(fp)
         DataBaseManager.session.commit()
+
+    @staticmethod
+    def find_spell(id):
+        req = 'https://wizard-world-api.herokuapp.com/Spells'
+        spells = requests.get(req).json()
+        for spell in spells:
+            if spell['id'] == id:
+                return spell
+
+    @staticmethod
+    def find_potion(id):
+        req = 'https://wizard-world-api.herokuapp.com/Elexirs'
+        potions = requests.get(req).json()
+        for potion in potions:
+            if potion['id'] == id:
+                return potion
+
+    @staticmethod
+    def add_potion(potion):
+        ingr = ', '.join(list(map(lambda x: x['name'], potion['ingredients'])))
+        inv = ', '.join(list(map(lambda x: x['firstName'] + ' ' + x['lastName'], potion['inventors'])))
+        pt = data_base_create.Potions(uuid=potion['id'], neme=potion['name'], effect=potion['effect'], sideEffects=potion['sideEffects'],
+                                      characteristics=potion['characteristics'], time=potion['time'], difficulty=potion['difficulty'],
+                                      ingredients=ingr, inventors=inv, manufacturer=potion['manufacturer'])
+        DataBaseManager.session.add(pt)
+        DataBaseManager.session.commit()
+
+    @staticmethod
+    def add_spell(spell):
+        pt = data_base_create.Potions(uuid=spell['id'], neme=spell['name'], incantation=spell['incantation'],
+                                      effect=spell['effect'], canBeVerbal=spell['canBeVerbal'],
+                                      type=spell['type'], light=spell['light'],
+                                      creator=spell['creator'])
+        DataBaseManager.session.add(pt)
+        DataBaseManager.session.commit()
+
+   ''' @staticmethod
+    def get_potion(id):
+        pt = DataBaseManager.session.query(data_base_create.Potions).filter(
+            data_base_create.Potions.uuid == id).all()
+        if pt:
+            pt = pt[0]
+            qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+                  'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
+                  'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
+                  'manufacturer': pt.manufacturer}
+        else:
+            id.find_potion()'''
+
+
+
 
 
 
