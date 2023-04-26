@@ -122,6 +122,80 @@ class AddToFavouritePotion(Resource):
         return response
 
 
+class FavouriteSpells(Resource):
+    def get(self, user_id):
+        if dbm.spells_favourite(user_id):
+            response = dbm.spells_favourite(user_id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class FavouritePotions(Resource):
+    def get(self, user_id):
+        if dbm.potions_favourite(user_id):
+            response = dbm.potions_favourite(user_id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class FavouriteAll(Resource):
+    def get(self, user_id):
+        if dbm.all_favourite(user_id):
+            response = dbm.all_favourite(user_id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class AddToViewedPotions(Resource):
+    def post(self, user_id):
+        json_data = request.get_json(force=True)
+        uuid = json_data['uuid']
+        if dbm.add_to_viewed_potions(uuid, user_id):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class AddToViewedSpells(Resource):
+    def post(self, user_id):
+        json_data = request.get_json(force=True)
+        uuid = json_data['uuid']
+        if dbm.add_to_viewed_spells(uuid, user_id):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class GetPotion(Resource):
+    def get(self, id):
+        if dbm.get_potion(id):
+            response = dbm.get_potion(id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
+class GetSpell(Resource):
+    def get(self, id):
+        if dbm.get_spell(id):
+            response = dbm.get_spell(id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+
 # class NewsResource(Resource):
 #     def get(self):
 #         return jsonify({
