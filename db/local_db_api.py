@@ -235,7 +235,7 @@ class DataBaseManager():
         DataBaseManager.session.add(pt)
         DataBaseManager.session.commit()
 
-   ''' @staticmethod
+    @staticmethod
     def get_potion(id):
         pt = DataBaseManager.session.query(data_base_create.Potions).filter(
             data_base_create.Potions.uuid == id).all()
@@ -246,7 +246,36 @@ class DataBaseManager():
                   'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
                   'manufacturer': pt.manufacturer}
         else:
-            id.find_potion()'''
+            potion = id.find_potion()
+            potion.add_potion()
+            pt = DataBaseManager.session.query(data_base_create.Potions).filter(
+                data_base_create.Potions.uuid == id).all()
+            pt = pt[0]
+            qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+                  'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
+                  'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
+                  'manufacturer': pt.manufacturer}
+        return qu
+
+    @staticmethod
+    def get_spell(id):
+        sp = DataBaseManager.session.query(data_base_create.Spells).filter(
+            data_base_create.Spells.uuid == id).all()
+        if sp:
+            sp = sp[0]
+            qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
+                  'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
+                  'light': sp.light}
+        else:
+            spell = id.find_spell()
+            spell.add_spell()
+            sp = DataBaseManager.session.query(data_base_create.Spells).filter(
+                data_base_create.Spells.uuid == id).all()
+            sp = sp[0]
+            qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
+                  'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
+                  'light': sp.light}
+        return qu
 
 
 
