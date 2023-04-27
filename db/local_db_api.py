@@ -277,6 +277,18 @@ class DataBaseManager():
                   'light': sp.light}
         return qu
 
+    @staticmethod #Alina
+    def get_spell_by_type(type):
+        sp = DataBaseManager.session.query(data_base_create.Spells).filter(
+            data_base_create.Spells.type == type).all()
+        req = 'https://wizard-world-api.herokuapp.com/Spells'
+        spells = requests.get(req).json()
+        spells = list(filter(lambda x: x['type'] == type, spells))
+        a = []
+        for spell in spells:
+            a.append({'id': spell['id'], 'name': spell['name'], 'effect': spell['effect']})
+        return a
+
 
 
 

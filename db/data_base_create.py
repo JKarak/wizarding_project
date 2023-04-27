@@ -109,7 +109,7 @@ class IngredientsForPotion(Base):
     ingr_rel = relationship("Ingredients", back_populates="ingredients")'''
 
 
-if __name__ == '__main__':
+
     Base.metadata.create_all(engine)
     session = Session(bind=engine)
     type = TypesOfSpells(name_of_type="Charm", file="charms_il.jpg")
