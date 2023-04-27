@@ -148,7 +148,7 @@ class FavouriteAll(Resource):
 class ViewedPotions(Resource):
     def get(self, user_id):
         if dbm.potions_favourite(user_id):
-            response = dbm.(user_id)
+            response = dbm.potions_favourite(user_id)
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
