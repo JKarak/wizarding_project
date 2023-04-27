@@ -244,7 +244,7 @@ class DataBaseManager():
             qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
                   'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
                   'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
-                  'manufacturer': pt.manufacturer}
+                  'manufacturer': pt.manufacturer, 'picture': pt.picture}
         else:
             potion = id.find_potion()
             potion.add_potion()
@@ -254,7 +254,7 @@ class DataBaseManager():
             qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
                   'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
                   'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
-                  'manufacturer': pt.manufacturer}
+                  'manufacturer': pt.manufacturer, 'picture': pt.picture}
         return qu
 
     @staticmethod #Alina
@@ -265,7 +265,7 @@ class DataBaseManager():
             sp = sp[0]
             qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
-                  'light': sp.light}
+                  'light': sp.light, 'picture': sp.picture}
         else:
             spell = id.find_spell()
             spell.add_spell()
@@ -274,7 +274,7 @@ class DataBaseManager():
             sp = sp[0]
             qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
-                  'light': sp.light}
+                  'light': sp.light, 'picture': sp.picture}
         return qu
 
     @staticmethod #Alina
