@@ -145,7 +145,14 @@ class FavouriteAll(Resource):
         return response
 
 
-class AddToViewedPotions(Resource):
+class ViewedPotions(Resource):
+    def get(self, user_id):
+        if dbm.potions_favourite(user_id):
+            response = dbm.(user_id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
     def post(self, user_id):
         json_data = request.get_json(force=True)
         uuid = json_data['uuid']
@@ -157,7 +164,7 @@ class AddToViewedPotions(Resource):
         return response
 
 
-class AddToViewedSpells(Resource):
+class ViewedSpells(Resource):
     def post(self, user_id):
         json_data = request.get_json(force=True)
         uuid = json_data['uuid']
