@@ -38,13 +38,11 @@ class UserRegistration(Resource):
         email = json_data['email']
         name = json_data['name']
         print(login, key, email, name)
-        #return json_data
         if dbm.add_user(login, key, email, name):
             response = jsonify({'result': 'ok'})
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
-        #response = jsonify({'bubu': 'pupu'})
         return response
 
 
@@ -59,13 +57,13 @@ class UserInfo(Resource):
 
 
 class NewAvatar(Resource):
-    def patch(self, user_id):
+    def patch(self, email):
         parse = reqparse.RequestParser()
         parse.add_argument('file', type=werkzeug.datastructures.FileStorage, location='files')
         args = parse.parse_args()
         image_file = args['file']
-        image_file.save(f"data/image/{user_id}.jpg")
-        if dbm.add_avatar(user_id, image_file):
+        image_file.save(f"data/image/{email}.jpg")
+        if dbm.add_avatar(email, image_file):
             response = jsonify({'result': 'ok'})
         else:
             response = jsonify({'result': 'not ok'})
@@ -99,34 +97,19 @@ class ForgotPassword(Resource):
         return response
 
 
-class AddToFavouriteSpell(Resource):
-    def post(self, user_id):
-        json_data = request.get_json(force=True)
-        uuid = json_data['uuid']
-        if dbm.add_to_favourite_spell(uuid, user_id):
-            response = jsonify({'result': 'ok'})
-        else:
-            response = jsonify({'result': 'not ok'})
-            response.status_code = 404
-        return response
-
-
-class AddToFavouritePotion(Resource):
-    def post(self, user_id):
-        json_data = request.get_json(force=True)
-        uuid = json_data['uuid']
-        if dbm.add_to_favourite_spell(uuid, user_id):
-            response = jsonify({'result': 'ok'})
-        else:
-            response = jsonify({'result': 'not ok'})
-            response.status_code = 404
-        return response
-
-
 class FavouriteSpells(Resource):
     def get(self, user_id):
         if dbm.spells_favourite(user_id):
             response = dbm.spells_favourite(user_id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+    def post(self, user_id):
+        json_data = request.get_json(force=True)
+        uuid = json_data['uuid']
+        if dbm.add_to_favourite_spell(uuid, user_id):
+            response = jsonify({'result': 'ok'})
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
@@ -137,6 +120,15 @@ class FavouritePotions(Resource):
     def get(self, user_id):
         if dbm.potions_favourite(user_id):
             response = dbm.potions_favourite(user_id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+    def post(self, user_id):
+        json_data = request.get_json(force=True)
+        uuid = json_data['uuid']
+        if dbm.add_to_favourite_spell(uuid, user_id):
+            response = jsonify({'result': 'ok'})
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
@@ -197,26 +189,15 @@ class GetSpell(Resource):
         return response
 
 
-# class NewsResource(Resource):
-#     def get(self):
-#         return jsonify({
-#             'news':
-#                 []
-#             }
-#         )
-#     def post(self):
-#         parser = reqparse.RequestParser()
-#         parser.add_argument('title', required=True)
-#         parser.add_argument('content', required=True)
-#         parser.add_argument('user_id', required=True, type=int)
-#         args = parser.parse_args()
-#         return jsonify({'id': id})
-
-
 db_session.global_init("db/blogs.db")
 api.add_resource(UserAuth, '/user/auth')
 api.add_resource(UserRegistration, '/user/registration')
 api.add_resource(UserInfo, '/user/<string:email>/info')
+api.add_resource(NewAvatar, '/user/<string:email>/changeavatar')
+api.add_resource(ForgotPassword, '/user/<string:login>/forgotpassword')
+api.add_resource(FavouriteSpells, '/user/<string:user_id>/favourite/spells')
+api.add_resource(FavouritePotions, '/user/<string:user_id>/favourite/potions')
+api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
 #api.add_resource(NewsResource, '/')
 app.run()
 
