@@ -198,6 +198,7 @@ api.add_resource(ForgotPassword, '/user/<string:login>/forgotpassword')
 api.add_resource(FavouriteSpells, '/user/<string:user_id>/favourite/spells')
 api.add_resource(FavouritePotions, '/user/<string:user_id>/favourite/potions')
 api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
+api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
 #api.add_resource(NewsResource, '/')
 app.run()
 
