@@ -31,13 +31,13 @@ class DataBaseManager():
         return new_password
 
     @staticmethod
-    def add_user(login, key, email): #A
+    def add_user(login, key, email, name): #A
         date_create = dt.datetime.now().date()
         if DataBaseManager.is_okay(key):
             ash = login + key
             ash = hashlib.md5(ash.encode())
             ash = ash.hexdigest()
-            user_1 = data_base_create.User(password_login_hash=ash, email=email, date_create=str(date_create))
+            user_1 = data_base_create.User(name=name, password_login_hash=ash, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
             DataBaseManager.session.commit()
             return user_1.id
