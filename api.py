@@ -32,19 +32,20 @@ class UserAuth(Resource):
 
 class UserRegistration(Resource):
     def post(self):
-        json_data = request.json()
+        json_data = request.json
         login = json_data['login']
         key = json_data['key']
         email = json_data['email']
-        print(login, key, email)
-        return json_data
-        # if dbm.add_user(login, key, email):
-        #     response = jsonify({'result': 'ok'})
-        # else:
-        #     response = jsonify({'result': 'not ok'})
-        #     response.status_code = 404
-        # #response = jsonify({'bubu': 'pupu'})
-        # return response
+        name = json_data['name']
+        print(login, key, email, name)
+        #return json_data
+        if dbm.add_user(login, key, email, name):
+            response = jsonify({'result': 'ok'})
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        #response = jsonify({'bubu': 'pupu'})
+        return response
 
 
 class UserInfo(Resource):
