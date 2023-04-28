@@ -11,7 +11,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
 @app.route('/login', methods=["GET", "POST"])
 def signIn():
-    user = session.get("usename", 0)
+    user = session.get("usename")
 
     if user:
         return redirect('/')
@@ -20,17 +20,19 @@ def signIn():
         wrong_password = ' '
 
         if form.validate_on_submit():
+            print('ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ')
             data = {
                 "login": form.login.data,
                 "password": form.password.data
             }
 
-            req = 'http://jusrager.pythonanywhere.com/user/auth'
-            resp = requests.post(req, json=data)
+            req = 'http://127.0.0.1:5000/user/auth'
+            resp = requests.get(req, params=data)
             print(resp.url)
 
             if resp:
                 session['username'] = data['login']
+                print(session.get('username'))
                 return redirect('/')
             else:
                 wrong_password = 'Неправильное имя пользователя, логин или пароль'
@@ -39,7 +41,7 @@ def signIn():
 
 @app.route('/register', methods=["GET", "POST"])
 def signUp():
-    user = session.get("usename", 0)
+    user = session.get("usename")
 
     if user:
         return redirect('/')
@@ -51,13 +53,13 @@ def signUp():
             data = {
                 "name": form.name.data,
                 "login": form.login.data,
-                "password": form.password.data,
+                "key": form.password.data,
                 "email": form.email.data
             }
 
-            req = 'http://jusrager.pythonanywhere.com/user/registration'
+            req = 'http://127.0.0.1:5000/user/registration'
             try:
-                response = requests.post(req, data=data, timeout=1.5)
+                response = requests.post(req, json=data, timeout=1.5)
                 print(response)
                 if response:
                     session['username'] = data['login']
@@ -73,8 +75,12 @@ def signUp():
 # основная страница
 @app.route('/', methods=["GET", "POST"])
 def main():
-    user = session.get("usename", 0)
-    if True:
+
+    print(session.items())
+
+    if 'username' in session:
+        user = session["username"]
+        print(user)
         form = FindSpells()
         if form.validate_on_submit():
             params = {'keywords': form.keywords.data,
@@ -87,31 +93,53 @@ def main():
 
         '''req2 = f'http://jusrager.pythonanywhere.com/api/v1/user/{login}/favourite/spells'
         spells_favourite = requests.get(req2)
-        spells_count_fav = spells_favourite.json()['spells']
+        !!!!!!!!!!!!!!!!!!!!!!!!!!spells_count_fav = spells_favourite.json()['spells']
 
         req3 = f'http://jusrager.pythonanywhere.com/api/v1/user/{login}/favourite/potions'
         potions_favourite = requests.get(req3)
-        potions_count_fav = potions_favourite.json()['spells']'''
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!potions_count_fav = potions_favourite.json()['spells']'''
 
         effects = []
         titles = []
         ids = []
         page = []
-        req = 'http://jusrager.pythonanywhere.com/api/v1/user/makaka/favourite/spells'
-        spells = requests.get(req).json()[0:2]
-        for spell in spells:
-            page.append('spells')
-            ids.append(spell['id'])
-            titles.append(spell['name'])
-            effects.append(spell['effect'])
+        req = 'http://127.0.0.1:5000/user/1/favourite/spells'
+        spells = requests.get(
+            req, headers={'Content-Type': 'application/json'})
+        if spells:
+            for spell in spells.json():
+                page.append('spells')
+                ids.append(spell['id'])
+                titles.append(spell['name'])
+                effects.append(spell['effect'])
+        else:
+            req = 'https://wizard-world-api.herokuapp.com/Spells'
+            spells = requests.get(
+                req, headers={'Content-Type': 'application/json'})
+            for spell in spells.json()[0:4]:
+                page.append('spells')
+                ids.append(spell['id'])
+                titles.append(spell['name'])
+                effects.append(spell['effect'])
 
-        req = 'https://wizard-world-api.herokuapp.com/Elixirs'
-        potions = requests.get(req).json()[0:2]
-        for potion in potions:
-            page.append('potions')
-            ids.append(potion['id'])
-            titles.append(potion['name'])
-            effects.append(potion['effect'])
+        req = 'http://127.0.0.1:5000/user/1/favourite/potions'
+        potions = requests.get(
+            req, headers={'Content-Type': 'application/json'})
+        if potions:
+            for potion in potions.json():
+                page.append('potions')
+                ids.append(potion['id'])
+                titles.append(potion['name'])
+                effects.append(potion['effect'])
+        else:
+            req = 'https://wizard-world-api.herokuapp.com/Elixirs'
+            potions = requests.get(
+                req, headers={'Content-Type': 'application/json'})
+            for potion in potions.json()[0:4]:
+                page.append('potions')
+                ids.append(potion['id'])
+                titles.append(potion['name'])
+                effects.append(potion['effect'])
 
         params = {'form': form,
                   'effects': effects,

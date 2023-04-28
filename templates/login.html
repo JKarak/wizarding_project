@@ -81,19 +81,22 @@
 		<div id="log-in" class="site-form log-in-form box-shadow border-radius-10">
 
 			<div class="form-output">
-				<form>
+				<form method="post">
+					{{form.hidden_tag()}}
 					{{ form.csrf_token }}
 					<div class="form-group label-floating">
-						{% for field in form if field.name != 'csrf_token' and field.name != 'submit' %}
+						{% for field in form if field.name not in ['csrf_token', 'submit'] %}
 						<div>
 							{{ field.label() }}
-							{{ field() }}
+							{{ field() }} 
 							{% for error in field.errors %}
 							<div class="error">{{ error }}</div>
 							{% endfor %}
 						</div>
 						{% endfor %}
-						<p>{{ form.submit(type="submit") }}</p>
+						<div>
+							<p>{{form.submit(class="btn btn-md btn-primary full-width")}}</p>
+						</div>
 						<p><a href="/register">Forgot password?</a></p>
 						<a href="/register">Don't have an account?</a>
 				</form>
