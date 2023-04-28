@@ -76,6 +76,7 @@ class Spells(Base):
     type = Column(String(100), nullable=False)
     light = Column(String(100), nullable=False)
     creator = Column(String(100), nullable=False)
+    picture = Column(String(200), default='spell_0.jpg')
 
 class Potions(Base):
     __tablename__ = 'potionss'
@@ -91,6 +92,7 @@ class Potions(Base):
     ingredients = Column(String(200), nullable=False)
     inventors = Column(String(200), nullable=False)
     manufacturer = Column(String(100), nullable=False)
+    picture = Column(String(200), default='potion_0.jpg')
 
 
 '''class Ingredients(Base):
