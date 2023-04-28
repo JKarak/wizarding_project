@@ -218,22 +218,32 @@ class DataBaseManager():
 
     @staticmethod
     def add_potion(potion): #my
-        ingr = ', '.join(list(map(lambda x: x['name'], potion['ingredients'])))
-        inv = ', '.join(list(map(lambda x: x['firstName'] + ' ' + x['lastName'], potion['inventors'])))
-        pt = data_base_create.Potions(uuid=potion['id'], neme=potion['name'], effect=potion['effect'], sideEffects=potion['sideEffects'],
-                                      characteristics=potion['characteristics'], time=potion['time'], difficulty=potion['difficulty'],
-                                      ingredients=ingr, inventors=inv, manufacturer=potion['manufacturer'])
-        DataBaseManager.session.add(pt)
-        DataBaseManager.session.commit()
+        sp = DataBaseManager.session.query(data_base_create.Potions).filter(
+            data_base_create.Potions.uuid == potion['id']).all()
+        if sp:
+            pass
+        else:
+            ingr = ', '.join(list(map(lambda x: x['name'], potion['ingredients'])))
+            inv = ', '.join(list(map(lambda x: x['firstName'] + ' ' + x['lastName'], potion['inventors'])))
+            pt = data_base_create.Potions(uuid=potion['id'], neme=potion['name'], effect=potion['effect'], sideEffects=potion['sideEffects'],
+                                          characteristics=potion['characteristics'], time=potion['time'], difficulty=potion['difficulty'],
+                                          ingredients=ingr, inventors=inv, manufacturer=potion['manufacturer'])
+            DataBaseManager.session.add(pt)
+            DataBaseManager.session.commit()
 
     @staticmethod
     def add_spell(spell): #my
-        pt = data_base_create.Potions(uuid=spell['id'], neme=spell['name'], incantation=spell['incantation'],
-                                      effect=spell['effect'], canBeVerbal=spell['canBeVerbal'],
-                                      type=spell['type'], light=spell['light'],
-                                      creator=spell['creator'])
-        DataBaseManager.session.add(pt)
-        DataBaseManager.session.commit()
+        sp = DataBaseManager.session.query(data_base_create.Spells).filter(
+            data_base_create.Spells.uuid == spell['id']).all()
+        if sp:
+            pass
+        else:
+            pt = data_base_create.Spells(uuid=spell['id'], neme=spell['name'], incantation=spell['incantation'],
+                                          effect=spell['effect'], canBeVerbal=spell['canBeVerbal'],
+                                          type=spell['type'], light=spell['light'],
+                                          creator=spell['creator'])
+            DataBaseManager.session.add(pt)
+            DataBaseManager.session.commit()
 
     @staticmethod
     def get_potion(id): #Alina
@@ -287,6 +297,37 @@ class DataBaseManager():
         a = []
         for spell in spells:
             a.append({'id': spell['id'], 'name': spell['name'], 'effect': spell['effect']})
+        return a
+
+    @staticmethod #Alina
+    def get_all_spells():
+        req = 'https://wizard-world-api.herokuapp.com/Spells'
+        spells = requests.get(req).json()
+        a = []
+        for spell in spells:
+            spell.add_spell()
+        sps = DataBaseManager.session.query(data_base_create.Spells).all()
+        for sp in sps:
+            qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
+                  'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
+                  'light': sp.light, 'picture': sp.picture}
+            a.append(qu)
+        return a
+
+    @staticmethod  # Alina
+    def get_all_potions():
+        req = 'https://wizard-world-api.herokuapp.com/Potions'
+        potions = requests.get(req).json()
+        a = []
+        for potion in potions:
+            potion.add_potion()
+        pts = DataBaseManager.session.query(data_base_create.Potions).all()
+        for pt in pts:
+            qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+                  'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
+                  'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
+                  'manufacturer': pt.manufacturer, 'picture': pt.picture}
+            a.append(qu)
         return a
 
 
