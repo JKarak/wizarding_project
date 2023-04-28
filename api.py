@@ -176,7 +176,7 @@ class ViewedSpells(Resource):
         return response
 
 
-class GetPotion(Resource):
+class Potion(Resource):
     def get(self, id):
         if dbm.get_potion(id):
             response = dbm.get_potion(id)
@@ -185,11 +185,19 @@ class GetPotion(Resource):
             response.status_code = 404
         return response
 
-
-class GetSpell(Resource):
+class Spell(Resource):
     def get(self, id):
         if dbm.get_spell(id):
             response = dbm.get_spell(id)
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+class SpellByType(Resource):
+    def get(self, type):
+        if dbm.get_spell_by_type(type):
+            response = dbm.get_spell_by_type(type)
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
@@ -204,7 +212,7 @@ api.add_resource(NewAvatar, '/user/<string:email>/changeavatar')
 api.add_resource(ForgotPassword, '/user/<string:login>/forgotpassword')
 api.add_resource(FavouriteSpells, '/user/<string:user_id>/favourite/spells')
 api.add_resource(FavouritePotions, '/user/<string:user_id>/favourite/potions')
-#api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
+api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
 #api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
 #api.add_resource(NewsResource, '/')
 app.run()
