@@ -79,7 +79,7 @@ class Spells(Base):
     picture = Column(String(200), default='spell_0.jpg')
 
 class Potions(Base):
-    __tablename__ = 'potionss'
+    __tablename__ = 'potions'
     id = Column(Integer(), primary_key=True)
     uuid = Column(String(36), nullable=False)
     name = Column(String(100), nullable=False)
