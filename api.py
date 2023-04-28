@@ -203,14 +203,23 @@ class SpellByType(Resource):
             response.status_code = 404
         return response
 
-# class PotionsList(Resource):
-#     def get(self, id):
-#         if dbm.get_potion(id):
-#             response = dbm.get_potion(id)
-#         else:
-#             response = jsonify({'result': 'not ok'})
-#             response.status_code = 404
-#         return response
+class PotionsList(Resource):
+    def get(self):
+        if dbm.get_all_potions():
+            response = dbm.get_all_potions()
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
+
+class SpellsList(Resource):
+    def get(self):
+        if dbm.get_all_spells():
+            response = dbm.get_all_spells()
+        else:
+            response = jsonify({'result': 'not ok'})
+            response.status_code = 404
+        return response
 
 
 db_session.global_init("db/blogs.db")
@@ -227,6 +236,8 @@ api.add_resource(ViewedSpells, '/viewed/<string:user_id>/spells')
 api.add_resource(Potion, '/potions/<string:id>')
 api.add_resource(Spell, '/spells/<string:id>')
 api.add_resource(SpellByType, '/spells/<string:type>')
+api.add_resource(PotionsList, '/potions')
+api.add_resource(SpellsList, '/spells')
 app.run()
 
 #http://127.0.0.1:5000/4?title=werty&content=werty&user_id=234
