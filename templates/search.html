@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+	<title>Cook Note - Food Recipes HTML Template</title>
+	<meta name="author" content="Nile-Theme">
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="keywords" content="recipes food, recipes , chinese food, italian food">
+	<meta name="description" content="Cook Note - Food & Recipes Food Template">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- google fonts -->
+	<link
+		href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800%7CPoppins:100,200,300i,300,400,700,400i,500%7CDancing+Script:700"
+		rel="stylesheet">
+	<!-- animate -->
+	<link rel="stylesheet" href="/static/assets/css/animate.css" />
+	<!-- owl Carousel assets -->
+	<link href="/static/assets/css/owl.carousel.css" rel="stylesheet">
+	<link href="/static/assets/css/owl.theme.css" rel="stylesheet">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+	<!-- hover anmation -->
+	<link rel="stylesheet" href="/static/assets/css/hover-min.css">
+	<!-- flag icon -->
+	<link rel="stylesheet" href="/static/assets/css/flag-icon.min.css">
+	<!-- main style -->
+	<link rel="stylesheet" href="/static/assets/css/style.css">
+	<!-- colors -->
+	<link rel="stylesheet" href="/static/assets/css/colors/main.css">
+	<!-- elegant icon -->
+	<link rel="stylesheet" href="/static/assets/css/elegant_icon.css">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="/static/assets/css/fontawesome-all.min.css">
+
+</head>
+
+<body>
+
+	<header class="background-main-color">
+		<div class="container">
+			<div class="header-output">
+				<div class="header-in">
+
+					<div class="row">
+						<div class="col-lg-2 col-md-12">
+							<a id="logo" href="/" class="d-inline-block margin-tb-5px"><img
+									src="/static/image/logo_45x45_white_01.png" alt=""></a>
+							<a class="mobile-toggle padding-13px background-main-color" href="#"><i
+									class="fas fa-bars"></i></a>
+						</div>
+						<div class="col-lg-8 col-md-12 position-inherit">
+						</div>
+						<div class="col-lg-2 col-md-12 d-none d-lg-block">
+							<hr class="margin-bottom-0px d-block d-sm-none">
+							<a href="page-login.html"
+								class="text-white ba-1 box-shadow float-right padding-lr-23px padding-tb-15px text-extra-large"><i
+									class="far fa-user"></i></a>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- // Header  -->
+
+	<div id="page-title" class="padding-tb-30px gradient-white">
+		<div class="container text-left">
+
+			<h1 class="font-weight-300">Searching results</h1>
+		</div>
+	</div>
+
+	<div class="container margin-bottom-100px">
+
+		<div class="recipes-masonry row">
+			{% for item in range(4) %}
+			<!-- Recipe Item -->
+
+			<div class="col-xl-3 col-lg-4 col-md-6 recipe-item margin-bottom-40px">
+				<div class="card border-0 box-shadow">
+					<div class="card-img-top"><a href="#"><img src="http://placehold.it/420x335" alt=""></a></div>
+					<div class="padding-lr-30px padding-tb-20px">
+						<h5 class="margin-bottom-20px margin-top-10px"><a class="text-dark"
+								href="/{{ page[item] }}/{{ ids[item] }}">{{ titles[item] }}</a></h5>
+						<hr>
+						<div class="row no-gutters">
+							<div class="col-4 text-left"><a href="#" class="text-red"><i class="far fa-heart"></i>
+									Save</a></div>
+						</div>
+					</div>
+					<div class="background-light-grey border-top-1 border-grey padding-lr-30px padding-tb-20px">
+						<a class="d-inline-block text-grey-3 h6 margin-bottom-0px margin-right-15px">{{effects[item]
+							}}</a>
+					</div>
+				</div>
+			</div>
+			<!-- // Recipe Item -->
+			{% endfor %}
+
+
+		</div>
+		<div class="text-center">
+		</div>
+
+	</div>
+
+	<script src="/static/assets/js/jquery-3.2.1.min.js"></script>
+	<script src="/static/assets/js/sticky-sidebar.js"></script>
+	<script src="/static/assets/js/YouTubePopUp.jquery.js"></script>
+	<script src="/static/assets/js/owl.carousel.min.js"></script>
+	<script src="/static/assets/js/imagesloaded.min.js"></script>
+	<script src="/static/assets/js/masonry.min.js"></script>
+	<script src="/static/assets/js/wow.min.js"></script>
+	<script src="/static/assets/js/custom.js"></script>
+	<script src="/static/assets/js/popper.min.js"></script>
+	<script src="/static/assets/js/bootstrap.min.js"></script>
+</body>
+
+</html>

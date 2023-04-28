@@ -13,7 +13,7 @@ api = Api(app)
 class UserAuth(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        #parser - это prorerties
+        # parser - это prorerties
         parser.add_argument('login', required=True)
         parser.add_argument('password', required=True)
         args = parser.parse_args()
@@ -38,8 +38,9 @@ class NewsResource(Resource):
             'news':
                 [item.to_dict(only=('title', 'content', 'user.name'))
                  for item in news]
-            }
+        }
         )
+
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('title', required=True)
@@ -51,7 +52,7 @@ class NewsResource(Resource):
         news = News()
         news.title = args['title']
         news.content = args['content']
-        news.user_id =args['user_id']
+        news.user_id = args['user_id']
         session.add(news)
         session.commit()
         id = session.query(News).filter(News.title == title).id
@@ -63,4 +64,4 @@ api.add_resource(UserAuth, '/user/registration')
 api.add_resource(NewsResource, '/')
 app.run()
 
-#http://127.0.0.1:5000/4?title=werty&content=werty&user_id=234
+# http://127.0.0.1:5000/4?title=werty&content=werty&user_id=234
