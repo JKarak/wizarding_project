@@ -316,7 +316,7 @@ class DataBaseManager():
 
     @staticmethod  # Alina
     def get_all_potions():
-        req = 'https://wizard-world-api.herokuapp.com/Potions'
+        req = 'https://wizard-world-api.herokuapp.com/Elexirs'
         potions = requests.get(req).json()
         a = []
         for potion in potions:
