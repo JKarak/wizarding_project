@@ -242,12 +242,9 @@ def acc():
     info = {'name': 1,
             'number_of_favorites': 2}
 
-    with open('avatar.txt', 'rt') as f:
-        avatar = f.read()
-
     params = {
         'name': info['name'],
-        'avatar': avatar,
+        #'avatar': avatar,
         'number_of_favorites': info['number_of_favorites']
     }
 

@@ -10,4 +10,4 @@ content-type: application/json
 
 ###
 
-GET http://jusrager.pythonanywhere.com/spells HTTP/1.1
+GET http://127.0.0.1:5000/spellsbytype/Charm HTTP/1.1
