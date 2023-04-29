@@ -76,9 +76,13 @@
 		<div class="row">
 			<div class="col-lg-8">
 				<div class="margin-bottom-40px card border-0 box-shadow">
-					<div class="card-img-top"><a href="#"><img src="/static/image/1.jpg" width="400" alt=""></a></div>
+					<div class="card-img-top">
+						<img src="data:image/jpeg;base64,{{ avatar }}" width="400" alt="">
+					</div>
 					<div class="padding-lr-30px padding-tb-20px">
-						<h5 class="margin-bottom-20px margin-top-10px"><a class="text-dark" href="#">{{name}}</a></h5>
+						<h5 class="margin-bottom-20px margin-top-10px">
+							<a class="text-dark" href="#">{{name}}</a>
+						</h5>
 						<hr>
 						<h3>Number of favorites</h3>
 						<ul>

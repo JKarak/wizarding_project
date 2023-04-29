@@ -1,7 +1,9 @@
 from flask import Flask, render_template, redirect, session, request, url_for
 from forms import Login, Register, FindSpells
+
 import datetime
 import requests
+import base64
 
 app = Flask(__name__)
 
@@ -50,11 +52,13 @@ def signUp():
         wrong_password = ' '
 
         if form.validate_on_submit():
+            buff = form.avatar.data.read()
             data = {
                 "name": form.name.data,
                 "login": form.login.data,
                 "key": form.password.data,
-                "email": form.email.data
+                "email": form.email.data,
+                "avatar": base64.b64encode(buff).decode("utf-8")
             }
 
             req = 'http://127.0.0.1:5000/user/registration'
@@ -79,8 +83,7 @@ def main():
     print(session.items())
 
     if 'username' in session:
-        user = session["username"]
-        print(user)
+
         form = FindSpells()
         if form.validate_on_submit():
             params = {'keywords': form.keywords.data,
@@ -98,12 +101,13 @@ def main():
         req3 = f'http://jusrager.pythonanywhere.com/api/v1/user/{login}/favourite/potions'
         potions_favourite = requests.get(req3)
         !!!!!!!!!!!!!!!!!!!!!!!!!!!potions_count_fav = potions_favourite.json()['spells']'''
-
+        user = session["username"]
+        print(user)
         effects = []
         titles = []
         ids = []
         page = []
-        req = 'http://127.0.0.1:5000/user/1/favourite/spells'
+        req = f'http://127.0.0.1:5000/user/{user}/favourite/spells'
         spells = requests.get(
             req, headers={'Content-Type': 'application/json'})
         if spells:
@@ -122,7 +126,7 @@ def main():
                 titles.append(spell['name'])
                 effects.append(spell['effect'])
 
-        req = 'http://127.0.0.1:5000/user/1/favourite/potions'
+        req = f'http://127.0.0.1:5000/user/{user}/favourite/potions'
         potions = requests.get(
             req, headers={'Content-Type': 'application/json'})
         if potions:
@@ -207,14 +211,15 @@ def potions(id):
     return render_template('potions.html', **params)
 
 
-@app.route('/category/<type>')
-def category(type):
+@app.route('/category/<spell_type>')
+def category(spell_type: str):
+    spell_type = spell_type.capitalize()
     effects = []
     titles = []
     ids = []
     page = []
-    req = 'https://wizard-world-api.herokuapp.com/Spells'
-    spells = requests.get(req).json()[0:4]
+    req = f'http://127.0.0.1:5000/spellsbytype/{spell_type}'
+    spells = requests.get(req).json()
     for spell in spells:
         page.append('spells')
         ids.append(spell['id'])
@@ -237,8 +242,14 @@ def acc():
     info = {'name': 1,
             'number_of_favorites': 2}
 
-    params = {'name': info['name'],
-              'number_of_favorites': info['number_of_favorites']}
+    with open('avatar.txt', 'rt') as f:
+        avatar = f.read()
+
+    params = {
+        'name': info['name'],
+        'avatar': avatar,
+        'number_of_favorites': info['number_of_favorites']
+    }
 
     return render_template('acc.html', **params)
 
