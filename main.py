@@ -229,7 +229,7 @@ def category(spell_type: str):
         spells = requests.get(req).json()
         for spell in spells:
             page.append('spells')
-            ids.append(spell['id'])
+            ids.append(spell['uuid'])
             titles.append(spell['name'])
             effects.append(spell['effect'])
 

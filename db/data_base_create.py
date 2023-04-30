@@ -6,9 +6,10 @@ from sqlalchemy.orm import relationship
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-engine = create_engine("sqlite:///harry_potter_data.db")
+engine = create_engine("sqlite:///db/harry_potter_data.db")
 
 Base = declarative_base()
+
 
 class User(Base):  # 1
     __tablename__ = 'users'
@@ -18,10 +19,12 @@ class User(Base):  # 1
     email = Column(String(100), nullable=False)
     avatar_file = Column(String(200), default='assets/avatar_0.jpg')
     date_create = Column(String(100), nullable=False)
-    potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
+    potions_rel_fav = relationship(
+        "FavouritePotions", back_populates="user_rel")
     potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
     spells_rel_fav = relationship("FavouriteSpells", back_populates="user_rel")
     spells_rel_view = relationship("ViewedSpells", back_populates="user_rel")
+
 
 class FavouritePotions(Base):
     __tablename__ = 'favourite_potions'
@@ -41,6 +44,7 @@ class ViewedPotions(Base):
     date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="potions_rel_view")
 
+
 class FavouriteSpells(Base):
     __tablename__ = 'favourite_spells'
     id = Column(Integer(), primary_key=True)
@@ -59,11 +63,13 @@ class ViewedSpells(Base):
     date = Column(String(100), nullable=False)
     user_rel = relationship("User", back_populates="spells_rel_view")
 
+
 class TypesOfSpells(Base):
     __tablename__ = 'type_of_spells'
     id = Column(Integer(), primary_key=True)
     name_of_type = Column(String(100))
     file = Column(String(100))
+
 
 class Spells(Base):
     __tablename__ = 'spells'
@@ -77,6 +83,7 @@ class Spells(Base):
     light = Column(String(100))
     creator = Column(String(100))
     picture = Column(String(200), default='assets/spell_0.jpg')
+
 
 class Potions(Base):
     __tablename__ = 'potions'
@@ -116,14 +123,18 @@ if __name__ == '__main__':
     session = Session(bind=engine)
     type = TypesOfSpells(name_of_type="Charm", file="assets/charms_il.jpg")
     session.add(type)
-    type = TypesOfSpells(name_of_type="Transfiguration", file='assets/transfiguration_il.jpg')
+    type = TypesOfSpells(name_of_type="Transfiguration",
+                         file='assets/transfiguration_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="DarkCharm", file='assets/DarkCharm_il.jpg')
+    type = TypesOfSpells(name_of_type="DarkCharm",
+                         file='assets/DarkCharm_il.jpg')
     session.add(type)
     type = TypesOfSpells(name_of_type="Curse", file='assets/curse_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="BindingMagicalContract", file='assets/BindingMagicalContract_il.jpg')
+    type = TypesOfSpells(name_of_type="BindingMagicalContract",
+                         file='assets/BindingMagicalContract_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="Vanishment", file='assets/Vanishment_il.jpg')
+    type = TypesOfSpells(name_of_type="Vanishment",
+                         file='assets/Vanishment_il.jpg')
     session.add(type)
     session.commit()
