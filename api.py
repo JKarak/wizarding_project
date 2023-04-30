@@ -1,9 +1,6 @@
-import flask
 import werkzeug
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
-from flask import request
-from flask_restful import Resource
 from data import db_session
 from db.local_db_api import *
 
