@@ -1,12 +1,11 @@
-from sqlalchemy import create_engine, MetaData, Table, Integer, String, \
-    Column, DateTime, ForeignKey, Numeric, SmallInteger
-
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-engine = create_engine("sqlite:///db/harry_potter_data.db")
+from sqlalchemy import (create_engine, MetaData, Table, Integer,
+                        String, Column, DateTime, ForeignKey, Numeric, SmallInteger)
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, Session
+
+
+engine = create_engine("sqlite:///../db_api/data/harry_potter_data.db")
 
 Base = declarative_base()
 

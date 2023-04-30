@@ -1,8 +1,10 @@
 import werkzeug
 from flask import Flask, jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
-from data import db_session
-from db.local_db_api import *
+
+import db_session
+import sys; sys.path.append('../')
+from db_api.local_db_api import *
 
 app = Flask(__name__)
 api = Api(app)
@@ -256,7 +258,7 @@ class SpellsList(Resource):
         return response
 
 
-db_session.global_init("db/blogs.db")
+db_session.global_init('../db_api/data/blogs.db')
 api.add_resource(UserAuth, '/user/auth')
 api.add_resource(UserRegistration, '/user/registration')
 api.add_resource(UserInfo, '/user/<string:email>/info')
@@ -264,8 +266,7 @@ api.add_resource(NewAvatar, '/user/<string:email>/changeavatar')
 api.add_resource(ForgotPassword, '/user/<string:login>/forgotpassword')
 api.add_resource(FavouriteSpells, '/user/<string:user_id>/favourite/spells')
 api.add_resource(FavouritePotions, '/user/<string:user_id>/favourite/potions')
-api.add_resource(
-    FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
+api.add_resource(FavouriteAll, '/user/<string:user_id>/favourite/all_favourite')
 api.add_resource(ViewedPotions, '/viewed/<string:user_id>/potions')
 api.add_resource(ViewedSpells, '/viewed/<string:user_id>/spells')
 api.add_resource(Potion, '/potions/<string:id>')

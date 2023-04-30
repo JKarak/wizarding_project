@@ -1,21 +1,20 @@
 import random
 import string
-from email.header import Header
-
-import db.data_base_create as data_base_create
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 import datetime as dt
-import os
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import smtplib
 import hashlib
 import requests
+from email.header import Header
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from . import data_base_create
 
 
 class DataBaseManager():
-    engine = create_engine("sqlite:///db/harry_potter_data.db")
+    engine = create_engine("sqlite:///../db_api/data/harry_potter_data.db")
     session = Session(bind=engine)
 
     @staticmethod
