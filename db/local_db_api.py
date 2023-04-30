@@ -14,8 +14,7 @@ import hashlib
 import requests
 
 class DataBaseManager():
-    name = os.path.join('db', 'harry_potter_data.db')
-    engine = create_engine(f"sqlite:///{name}")
+    engine = create_engine("sqlite:///harry_potter_data.db")
     session = Session(bind=engine)
 
     @staticmethod
@@ -207,14 +206,20 @@ class DataBaseManager():
         for spell in spells:
             if spell['id'] == id:
                 return spell
+        return None
 
     @staticmethod
     def find_potion(id): #my
-        req = 'https://wizard-world-api.herokuapp.com/Elexirs'
-        potions = requests.get(req).json()
+        print(id)
+        req ='https://wizard-world-api.herokuapp.com/Elixirs'
+        response = requests.get(req)
+        print(response.url)
+        #potions = potions.json()
+        potions = response.json()
         for potion in potions:
             if potion['id'] == id:
                 return potion
+        return None
 
     @staticmethod
     def add_potion(potion): #my
@@ -225,7 +230,7 @@ class DataBaseManager():
         else:
             ingr = ', '.join(list(map(lambda x: x['name'], potion['ingredients'])))
             inv = ', '.join(list(map(lambda x: x['firstName'] + ' ' + x['lastName'], potion['inventors'])))
-            pt = data_base_create.Potions(uuid=potion['id'], neme=potion['name'], effect=potion['effect'], sideEffects=potion['sideEffects'],
+            pt = data_base_create.Potions(uuid=potion['id'], name=potion['name'], effect=potion['effect'], sideEffects=potion['sideEffects'],
                                           characteristics=potion['characteristics'], time=potion['time'], difficulty=potion['difficulty'],
                                           ingredients=ingr, inventors=inv, manufacturer=potion['manufacturer'])
             DataBaseManager.session.add(pt)
@@ -238,11 +243,12 @@ class DataBaseManager():
         if sp:
             pass
         else:
-            pt = data_base_create.Spells(uuid=spell['id'], neme=spell['name'], incantation=spell['incantation'],
-                                          effect=spell['effect'], canBeVerbal=spell['canBeVerbal'],
-                                          type=spell['type'], light=spell['light'],
-                                          creator=spell['creator'])
+            pt = data_base_create.Spells(uuid=spell['id'], name=spell['name'], incantation=spell['incantation'],
+                                         effect=spell['effect'], canBeVerbal=spell['canBeVerbal'],
+                                         type=spell['type'], light=spell['light'],
+                                         creator=spell['creator'])
             DataBaseManager.session.add(pt)
+            print(pt.id)
             DataBaseManager.session.commit()
 
     @staticmethod
@@ -251,17 +257,19 @@ class DataBaseManager():
             data_base_create.Potions.uuid == id).all()
         if pt:
             pt = pt[0]
-            qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+            qu = {'uuid': pt.uuid, 'name': pt.name, 'effect': pt.effect,
                   'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
                   'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
                   'manufacturer': pt.manufacturer, 'picture': pt.picture}
         else:
-            potion = id.find_potion()
-            potion.add_potion()
+            a = DataBaseManager()
+            potion = a.find_potion(id)
+            print(potion)
+            a.add_potion(potion)
             pt = DataBaseManager.session.query(data_base_create.Potions).filter(
                 data_base_create.Potions.uuid == id).all()
             pt = pt[0]
-            qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+            qu = {'uuid': pt.uuid, 'name': pt.name, 'effect': pt.effect,
                   'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
                   'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
                   'manufacturer': pt.manufacturer, 'picture': pt.picture}
@@ -273,16 +281,17 @@ class DataBaseManager():
             data_base_create.Spells.uuid == id).all()
         if sp:
             sp = sp[0]
-            qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
+            qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
                   'light': sp.light, 'picture': sp.picture}
         else:
-            spell = id.find_spell()
-            spell.add_spell()
+            a = DataBaseManager()
+            spell = a.find_spell(id)
+            a.add_spell(spell)
             sp = DataBaseManager.session.query(data_base_create.Spells).filter(
                 data_base_create.Spells.uuid == id).all()
             sp = sp[0]
-            qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
+            qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
                   'light': sp.light, 'picture': sp.picture}
         return qu
@@ -296,7 +305,7 @@ class DataBaseManager():
         spells = list(filter(lambda x: x['type'] == type, spells))
         a = []
         for spell in spells:
-            a.append({'id': spell['id'], 'name': spell['name'], 'effect': spell['effect']})
+            a.append({'uuid': spell['id'], 'name': spell['name'], 'effect': spell['effect']})
         return a
 
     @staticmethod #Alina
@@ -305,10 +314,11 @@ class DataBaseManager():
         spells = requests.get(req).json()
         a = []
         for spell in spells:
-            spell.add_spell()
+            b = DataBaseManager()
+            b.add_spell(spell)
         sps = DataBaseManager.session.query(data_base_create.Spells).all()
         for sp in sps:
-            qu = {'id': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
+            qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
                   'light': sp.light, 'picture': sp.picture}
             a.append(qu)
@@ -316,23 +326,28 @@ class DataBaseManager():
 
     @staticmethod  # Alina
     def get_all_potions():
-        req = 'https://wizard-world-api.herokuapp.com/Elexirs'
+        req = 'https://wizard-world-api.herokuapp.com/Elixirs'
         potions = requests.get(req).json()
         a = []
         for potion in potions:
-            potion.add_potion()
+            b = DataBaseManager()
+            b.add_potion(potion)
         pts = DataBaseManager.session.query(data_base_create.Potions).all()
         for pt in pts:
-            qu = {'id': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+            qu = {'uuid': pt.uuid, 'name': pt.name, 'effect': pt.effect,
                   'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
                   'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
                   'manufacturer': pt.manufacturer, 'picture': pt.picture}
             a.append(qu)
         return a
 
-
-
-
-
+    @staticmethod
+    def c_avatar(email, file_path):  # A
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.email == email).one()
+        user.avatar_file = file_path
+        DataBaseManager.session.commit()
+a = DataBaseManager()
+print(a.get_spell_by_type('Charm'))
 
 
