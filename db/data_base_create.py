@@ -16,7 +16,7 @@ class User(Base):  # 1
     name = Column(String(100), nullable=False)
     password_login_hash = Column(String(128), nullable=False)
     email = Column(String(100), nullable=False)
-    avatar_file = Column(String(200), default='avatar_0.jpg')
+    avatar_file = Column(String(200), default='assets/avatar_0.jpg')
     date_create = Column(String(100), nullable=False)
     potions_rel_fav = relationship("FavouritePotions", back_populates="user_rel")
     potions_rel_view = relationship("ViewedPotions", back_populates="user_rel")
@@ -76,7 +76,7 @@ class Spells(Base):
     type = Column(String(100))
     light = Column(String(100))
     creator = Column(String(100))
-    picture = Column(String(200), default='spell_0.jpg')
+    picture = Column(String(200), default='assets/spell_0.jpg')
 
 class Potions(Base):
     __tablename__ = 'potions'
@@ -92,7 +92,7 @@ class Potions(Base):
     ingredients = Column(String(200))
     inventors = Column(String(200))
     manufacturer = Column(String(100))
-    picture = Column(String(200), default='potion_0.jpg')
+    picture = Column(String(200), default='assets/potion_0.jpg')
 
 
 '''class Ingredients(Base):
@@ -114,16 +114,16 @@ class IngredientsForPotion(Base):
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
     session = Session(bind=engine)
-    type = TypesOfSpells(name_of_type="Charm", file="charms_il.jpg")
+    type = TypesOfSpells(name_of_type="Charm", file="assets/charms_il.jpg")
     session.add(type)
-    type = TypesOfSpells(name_of_type="Transfiguration", file='transfiguration_il.jpg')
+    type = TypesOfSpells(name_of_type="Transfiguration", file='assets/transfiguration_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="DarkCharm", file='DarkCharm_il.jpg')
+    type = TypesOfSpells(name_of_type="DarkCharm", file='assets/DarkCharm_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="Curse", file='curse_il.jpg')
+    type = TypesOfSpells(name_of_type="Curse", file='assets/curse_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="BindingMagicalContract", file='BindingMagicalContract_il.jpg')
+    type = TypesOfSpells(name_of_type="BindingMagicalContract", file='assets/BindingMagicalContract_il.jpg')
     session.add(type)
-    type = TypesOfSpells(name_of_type="Vanishment", file='Vanishment_il.jpg')
+    type = TypesOfSpells(name_of_type="Vanishment", file='assets/Vanishment_il.jpg')
     session.add(type)
     session.commit()
