@@ -159,121 +159,138 @@ def main():
 
 @app.route('/spells/<id>')
 def spells(id):
-    # req = f''
-    # data = requests.get(req)
-    # info = data.json()
+    if 'username' in session:
+        # req = f''
+        # data = requests.get(req)
+        # info = data.json()
 
-    info = {"id": id,
-            "name": 1,
-            "effect": 2,
-            "sideEffects": 3,
-            "characteristics": 4,
-            "time": 5,
-            "difficulty": 6,
-            "ingredients": 7}
+        info = {"id": id,
+                "name": 1,
+                "effect": 2,
+                "sideEffects": 3,
+                "characteristics": 4,
+                "time": 5,
+                "difficulty": 6,
+                "ingredients": 7}
 
-    params = {"id": id,
-              "name": info['name'],
-              "effect": info['effect'],
-              "sideEffects": info['sideEffects'],
-              "characteristics": info['characteristics'],
-              "time": info['time'],
-              "difficulty": info['difficulty'],
-              "ingredients": info['ingredients']}
+        params = {"id": id,
+                  "name": info['name'],
+                  "effect": info['effect'],
+                  "sideEffects": info['sideEffects'],
+                  "characteristics": info['characteristics'],
+                  "time": info['time'],
+                  "difficulty": info['difficulty'],
+                  "ingredients": info['ingredients']}
 
-    return render_template('spells.html', **params)
+        return render_template('spells.html', **params)
+    else:
+        return redirect('/login')
 
 
 @app.route('/potions/<id>')
 def potions(id):
-    # req = f''
-    # data = requests.get(req)
-    # info = data.json()
+    if 'username' in session:
+        # req = f''
+        # data = requests.get(req)
+        # info = data.json()
 
-    info = {"id": id,
-            "name": 1,
-            "incantation": 2,
-            "effect": 3,
-            "canBeVerbal": 4,
-            "type": 5,
-            "light": 6,
-            }
+        info = {"id": id,
+                "name": 1,
+                "incantation": 2,
+                "effect": 3,
+                "canBeVerbal": 4,
+                "type": 5,
+                "light": 6,
+                }
 
-    params = {"id": id,
-              "name": info['name'],
-              "incantation": info['incantation'],
-              "effect": info['effect'],
-              "canBeVerbal": info['canBeVerbal'],
-              "type": info['type'],
-              "light": info['light'],
-              }
+        params = {"id": id,
+                  "name": info['name'],
+                  "incantation": info['incantation'],
+                  "effect": info['effect'],
+                  "canBeVerbal": info['canBeVerbal'],
+                  "type": info['type'],
+                  "light": info['light'],
+                  }
 
-    return render_template('potions.html', **params)
+        return render_template('potions.html', **params)
+    else:
+        return redirect('/login')
 
 
 @app.route('/category/<spell_type>')
 def category(spell_type: str):
-    spell_type = spell_type.capitalize()
-    effects = []
-    titles = []
-    ids = []
-    page = []
-    req = f'http://127.0.0.1:5000/spellsbytype/{spell_type}'
-    spells = requests.get(req).json()
-    for spell in spells:
-        page.append('spells')
-        ids.append(spell['id'])
-        titles.append(spell['name'])
-        effects.append(spell['effect'])
+    if 'username' in session:
+        spell_type = spell_type.capitalize()
+        effects = []
+        titles = []
+        ids = []
+        page = []
+        req = f'http://127.0.0.1:5000/spellsbytype/{spell_type}'
+        spells = requests.get(req).json()
+        for spell in spells:
+            page.append('spells')
+            ids.append(spell['id'])
+            titles.append(spell['name'])
+            effects.append(spell['effect'])
 
-    params = {'effects': effects,
-              'titles': titles,
-              'ids': ids,
-              'page': page
-              }
-    return render_template('category.html', **params)
+        params = {'effects': effects,
+                  'titles': titles,
+                  'ids': ids,
+                  'page': page
+                  }
+        return render_template('category.html', **params)
+    else:
+        return redirect('/login')
 
 
 @app.route('/acc')
 def acc():
-    # req = 'https://wizard-world-api.herokuapp.com/Spells'
-    # info = requests.get(req).json()
+    if 'username' in session:
+        # req = 'https://wizard-world-api.herokuapp.com/Spells'
+        # info = requests.get(req).json()
 
-    info = {'name': 1,
-            'number_of_favorites': 2}
+        info = {'name': 1,
+                'number_of_favorites': 2}
 
-    params = {
-        'name': info['name'],
-        #'avatar': avatar,
-        'number_of_favorites': info['number_of_favorites']
-    }
+        params = {
+            'name': info['name'],
+            # 'avatar': avatar,
+            'number_of_favorites': info['number_of_favorites']
+        }
 
-    return render_template('acc.html', **params)
+        return render_template('acc.html', **params)
+    else:
+        return redirect('/login')
 
 
 @app.route('/search')
 def search():
-    # 'keywords': request.args['keywords'],
-    # 'category': request.args['category'],
-    effects = []
-    titles = []
-    ids = []
-    page = []
-    req = 'https://wizard-world-api.herokuapp.com/Spells'
-    spells = requests.get(req).json()[0:2]
-    for spell in spells:
-        page.append('spells')
-        ids.append(spell['id'])
-        titles.append(spell['name'])
-        effects.append(spell['effect'])
+    if 'username' in session:
+        keywords = request.args.get('keywords')
+        category = request.args.get('category')
+        effects = []
+        titles = []
+        ids = []
+        page = []
+        params = {'Name': keywords}
+        req = f'https://wizard-world-api.herokuapp.com/{category}'
+        response = requests.get(req, params=params)
+        spells = response.json()[0:2]
+        for spell in spells:
+            page.append('spells')
+            ids.append(spell['id'])
+            titles.append(spell['name'])
+            effects.append(spell['effect'])
 
-    params = {
-        'effects': effects,
-        'titles': titles,
-        'ids': ids,
-        'page': page
-    }
-    return render_template('search.html', **params)
+        params = {
+            'effects': effects,
+            'titles': titles,
+            'ids': ids,
+            'page': page
+        }
+        return render_template('search.html', **params)
+    else:
+        return redirect('/login')
 
 
 if __name__ == '__main__':
