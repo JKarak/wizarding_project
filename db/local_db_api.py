@@ -18,15 +18,15 @@ class DataBaseManager():
     session = Session(bind=engine)
 
     @staticmethod
-    def generate_random_password(wer): #my
+    def generate_random_password(): #my
         characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
-        length = 8
+        length = 9
         random.shuffle(characters)
         password = []
         for i in range(length):
             password.append(random.choice(characters))
         random.shuffle(password)
-        new_password = "".join(password) + wer
+        new_password = "".join(password)
         return new_password
 
     @staticmethod
@@ -39,6 +39,15 @@ class DataBaseManager():
             user_1 = data_base_create.User(name=name, password_login_hash=ash, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
             DataBaseManager.session.commit()
+            smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
+            smtpObj.starttls()
+            smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
+            m = f"""Вы успешно зарегистрировались на сайте 'wizard_world'! \n\n {name}, ждем вас на сайте"""
+            subject = 'wizard_world'
+            msg = MIMEText(m, 'plain', 'utf-8')
+            msg['Subject'] = Header(subject, 'utf-8')
+            smtpObj.sendmail("work_smtp_ofkate@mail.ru", email, msg.as_string())
+            smtpObj.quit()
             return user_1.id
         else:
             return 0
@@ -46,9 +55,13 @@ class DataBaseManager():
     @staticmethod
     def add_avatar(email, file_path): #A
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.email == email).one()
-        user.avatar_file = file_path
-        DataBaseManager.session.commit()
+            data_base_create.User.email == email).all()
+        if user:
+            user = user[0]
+            user.avatar_file = file_path
+            DataBaseManager.session.commit()
+        else:
+            return 'неправильная почта'
 
     @staticmethod
     def entrance_user(login, key): #A
@@ -71,9 +84,10 @@ class DataBaseManager():
             smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
             smtpObj.starttls()
             smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
-            wer = user.id
-            password = wer.generate_random_password()
-            m = f"""Ваш новый пароль: {password}\n. Вы сможете поменять его в любой момент. \n\n Не сообщайте никому эти данные в целях безопасности!"""
+            user = user[0]
+            a = DataBaseManager()
+            password = a.generate_random_password()
+            m = f"""Ваш новый пароль: {password}\n Вы сможете поменять его в любой момент. \n\n Не сообщайте никому эти данные в целях безопасности!"""
             subject = 'Новый пароль wizard_world'
             msg = MIMEText(m, 'plain', 'utf-8')
             msg['Subject'] = Header(subject, 'utf-8')
@@ -94,19 +108,23 @@ class DataBaseManager():
         ash = hashlib.md5(ash.encode())
         ash = ash.hexdigest()
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.email == email)
-        if user.password_login_hash == ash:
-            if DataBaseManager.is_okay(new_password):
-                ash_2 = login + new_password
-                ash_2 = hashlib.md5(ash_2.encode())
-                ash_2 = ash_2.hexdigest()
-                user.password_login_hash = ash_2
-                DataBaseManager.session.commit()
-                return 'successfully change password'
+            data_base_create.User.email == email).all()
+        if user:
+            user = user[0]
+            if user.password_login_hash == ash:
+                if DataBaseManager.is_okay(new_password):
+                    ash_2 = login + new_password
+                    ash_2 = hashlib.md5(ash_2.encode())
+                    ash_2 = ash_2.hexdigest()
+                    user.password_login_hash = ash_2
+                    DataBaseManager.session.commit()
+                    return 'successfully change password'
+                else:
+                    return 'wrong format of password'
             else:
-                return 'wrong format of password'
+                return 'wrong password'
         else:
-            return 'wrong password'
+            return 'нет такого пользователя'
 
     @staticmethod
     def is_okay(key): #my
@@ -342,12 +360,36 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def c_avatar(email, file_path):  # A
+    def change_name(email, new_name):  # A
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.email == email).one()
-        user.avatar_file = file_path
-        DataBaseManager.session.commit()
-a = DataBaseManager()
-print(a.get_spell_by_type('Charm'))
+            data_base_create.User.email == email).all()
+        if user:
+            user = user[0]
+            user.name = new_name
+            DataBaseManager.session.commit()
+        else:
+            return 'Неправильная почта'
+
+    @staticmethod
+    def change_email(old_email, new_email):
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.email == old_email).all()
+        if user:
+            user = user[0]
+            user.email = new_email
+            DataBaseManager.session.commit()
+            smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
+            smtpObj.starttls()
+            smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
+            m = f"""{user.name}, Вы успешно поменяли почту 'wizard_world'! \n\n"""
+            subject = 'wizard_world new email'
+            msg = MIMEText(m, 'plain', 'utf-8')
+            msg['Subject'] = Header(subject, 'utf-8')
+            smtpObj.sendmail("work_smtp_ofkate@mail.ru", new_email, msg.as_string())
+            smtpObj.quit()
+        else:
+            return 'Неправильная почта'
+
+
 
 
