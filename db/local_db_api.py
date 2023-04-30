@@ -341,6 +341,12 @@ class DataBaseManager():
             a.append(qu)
         return a
 
+    @staticmethod
+    def c_avatar(email, file_path):  # A
+        user = DataBaseManager.session.query(data_base_create.User).filter(
+            data_base_create.User.email == email).one()
+        user.avatar_file = file_path
+        DataBaseManager.session.commit()
 a = DataBaseManager()
 print(a.get_spell_by_type('Charm'))
 
