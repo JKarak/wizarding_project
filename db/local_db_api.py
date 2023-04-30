@@ -258,6 +258,7 @@ class DataBaseManager():
     def add_spell(spell): #my
         sp = DataBaseManager.session.query(data_base_create.Spells).filter(
             data_base_create.Spells.uuid == spell['id']).all()
+        print(sp)
         if sp:
             pass
         else:
@@ -305,6 +306,7 @@ class DataBaseManager():
         else:
             a = DataBaseManager()
             spell = a.find_spell(id)
+            print(spell.id)
             a.add_spell(spell)
             sp = DataBaseManager.session.query(data_base_create.Spells).filter(
                 data_base_create.Spells.uuid == id).all()
@@ -312,6 +314,7 @@ class DataBaseManager():
             qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
                   'light': sp.light, 'picture': sp.picture}
+        print(qu)
         return qu
 
     @staticmethod #Alina
@@ -390,6 +393,8 @@ class DataBaseManager():
         else:
             return 'Неправильная почта'
 
+a = DataBaseManager()
+print(a.get_spell('3fa85f64-5717-4562-b3fc-2c963f66afa6'))
 
 
 
