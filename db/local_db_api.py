@@ -2,7 +2,7 @@ import random
 import string
 from email.header import Header
 
-import wizard.data_base_create as data_base_create
+import db.data_base_create as data_base_create
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import datetime as dt
@@ -38,7 +38,12 @@ class DataBaseManager():
             ash = ash.hexdigest()
             user_1 = data_base_create.User(name=name, password_login_hash=ash, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
-            DataBaseManager.session.commit()
+            try:
+                # <use session>
+                DataBaseManager.session.commit()
+            except:
+                DataBaseManager.session.rollback()
+                raise
             smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
             smtpObj.starttls()
             smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
@@ -398,6 +403,60 @@ class DataBaseManager():
             smtpObj.quit()
         else:
             return 'Неправильная почта'
+
+    @staticmethod
+    def all_viewed(user_id):  # A
+        v_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+            data_base_create.FavouriteSpells.user_id == user_id).filter(
+            data_base_create.FavouriteSpells.active == 1).all()
+        v_potions = DataBaseManager.session.query(data_base_create.ViewedPotions).filter(
+            data_base_create.ViewedPotions.user_id == user_id).all()
+        a = v_potions + v_spells
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            if isinstance(a[i], data_base_create.ViewedSpells):
+                a[i] = a[i].spell_uuid
+            else:
+                a[i] = a[i].potion_uuid
+        return a
+
+    @staticmethod
+    def potions_viewed(user_id):  # A
+        a = DataBaseManager.session.query(data_base_create.ViewedPotions).filter(
+            data_base_create.ViewedPotions.user_id == user_id).all()
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            a[i] = a[i].potion_uuid
+        return a
+
+    @staticmethod
+    def spells_viewed(user_id):  # A
+        a = DataBaseManager.session.query(data_base_create.ViewedSpells).filter(
+            data_base_create.ViewedSpells.user_id == user_id).all()
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            a[i] = a[i].spell_uuid
+        return a
+
+    @staticmethod
+    def delete_from_favourite_spell(uuid, user_id):  # A
+        fs = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+            data_base_create.FavouriteSpells.user_id == user_id).filter(
+            data_base_create.FavouriteSpells.spell_uuid == uuid).one()
+        fs.active = 0
+        DataBaseManager.session.commit()
+
+    @staticmethod
+    def delete_from_favourite_potion(uuid, user_id):  # A
+        fs = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
+            data_base_create.FavouritePotions.user_id == user_id).filter(
+            data_base_create.FavouritePotions.potion_uuid == uuid).one()
+        fs.active = 0
+        DataBaseManager.session.commit()
+
+
+
+
 
 a = DataBaseManager()
 print(a.get_spell('fbd3cb46-c174-4843-a07e-fd83545dce58'))

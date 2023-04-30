@@ -4,6 +4,7 @@ from forms import Login, Register, FindSpells
 import datetime
 import requests
 import base64
+import os
 
 app = Flask(__name__)
 
