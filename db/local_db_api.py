@@ -2,7 +2,7 @@ import random
 import string
 from email.header import Header
 
-import db.data_base_create as data_base_create
+import wizard.data_base_create as data_base_create
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import datetime as dt
@@ -219,11 +219,16 @@ class DataBaseManager():
 
     @staticmethod
     def find_spell(id): #my
+        print(id, 6786)
         req = 'https://wizard-world-api.herokuapp.com/Spells'
         spells = requests.get(req).json()
         for spell in spells:
+            print(99)
+            print(spell['id'], 888)
             if spell['id'] == id:
+                print(888)
                 return spell
+
         return None
 
     @staticmethod
@@ -256,9 +261,9 @@ class DataBaseManager():
 
     @staticmethod
     def add_spell(spell): #my
+        print(spell, 777)
         sp = DataBaseManager.session.query(data_base_create.Spells).filter(
             data_base_create.Spells.uuid == spell['id']).all()
-        print(sp)
         if sp:
             pass
         else:
@@ -298,6 +303,7 @@ class DataBaseManager():
     def get_spell(id):
         sp = DataBaseManager.session.query(data_base_create.Spells).filter(
             data_base_create.Spells.uuid == id).all()
+        print(sp, 111)
         if sp:
             sp = sp[0]
             qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
@@ -306,7 +312,7 @@ class DataBaseManager():
         else:
             a = DataBaseManager()
             spell = a.find_spell(id)
-            print(spell.id)
+            print(spell, 555)
             a.add_spell(spell)
             sp = DataBaseManager.session.query(data_base_create.Spells).filter(
                 data_base_create.Spells.uuid == id).all()
@@ -392,9 +398,5 @@ class DataBaseManager():
             smtpObj.quit()
         else:
             return 'Неправильная почта'
-
-a = DataBaseManager()
-print(a.get_spell('3fa85f64-5717-4562-b3fc-2c963f66afa6'))
-
 
 
