@@ -2,10 +2,9 @@ import werkzeug
 from flask import Flask, jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
 
-import db_session
-import sys
-sys.path.append('..')
-from db_api.local_db_api import *
+
+import sys; sys.path.append('..')
+from db.local_db_api import *
 
 app = Flask(__name__)
 api = Api(app)
@@ -259,7 +258,6 @@ class SpellsList(Resource):
         return response
 
 
-db_session.global_init('../db_api/data/blogs.db')
 api.add_resource(UserAuth, '/user/auth')
 api.add_resource(UserRegistration, '/user/registration')
 api.add_resource(UserInfo, '/user/<string:email>/info')

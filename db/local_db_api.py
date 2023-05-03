@@ -1,24 +1,24 @@
 import random
 import string
+from email.header import Header
+
+import db.data_base_create as data_base_create
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 import datetime as dt
+import os
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import smtplib
 import hashlib
 import requests
-from email.header import Header
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
-from . import data_base_create
-
 
 class DataBaseManager():
-    engine = create_engine("sqlite:///../db_api/data/harry_potter_data.db")
+    engine = create_engine("sqlite:///harry_potter_data.db")
     session = Session(bind=engine)
 
     @staticmethod
-    def generate_random_password():  # my
+    def generate_random_password(): #my
         characters = list(string.ascii_letters + string.digits + "!@#$%^&*()")
         length = 9
         random.shuffle(characters)
@@ -30,16 +30,20 @@ class DataBaseManager():
         return new_password
 
     @staticmethod
-    def add_user(login, key, email, name):  # A
+    def add_user(login, key, email, name): #A
         date_create = dt.datetime.now().date()
         if DataBaseManager.is_okay(key):
             ash = login + key
             ash = hashlib.md5(ash.encode())
             ash = ash.hexdigest()
-            user_1 = data_base_create.User(
-                name=name, password_login_hash=ash, email=email, date_create=str(date_create))
+            user_1 = data_base_create.User(name=name, password_login_hash=ash, email=email, date_create=str(date_create))
             DataBaseManager.session.add(user_1)
-            DataBaseManager.session.commit()
+            try:
+                # <use session>
+                DataBaseManager.session.commit()
+            except:
+                DataBaseManager.session.rollback()
+                raise
             smtpObj = smtplib.SMTP('smtp.mail.ru', 587)
             smtpObj.starttls()
             smtpObj.login("work_smtp_ofkate@mail.ru", "axH8vCX8ZzPBnqHaHuUF")
@@ -47,15 +51,14 @@ class DataBaseManager():
             subject = 'wizard_world'
             msg = MIMEText(m, 'plain', 'utf-8')
             msg['Subject'] = Header(subject, 'utf-8')
-            smtpObj.sendmail("work_smtp_ofkate@mail.ru",
-                             email, msg.as_string())
+            smtpObj.sendmail("work_smtp_ofkate@mail.ru", email, msg.as_string())
             smtpObj.quit()
             return user_1.id
         else:
             return 0
 
     @staticmethod
-    def add_avatar(email, file_path):  # A
+    def add_avatar(email, file_path): #A
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.email == email).all()
         if user:
@@ -66,7 +69,7 @@ class DataBaseManager():
             return 'неправильная почта'
 
     @staticmethod
-    def entrance_user(login, key):  # A
+    def entrance_user(login, key): #A
         ash = login + key
         ash = hashlib.md5(ash.encode())
         ash = ash.hexdigest()
@@ -77,8 +80,9 @@ class DataBaseManager():
         else:
             return 0
 
+
     @staticmethod
-    def forgot_password(login, email):  # A
+    def forgot_password(login, email): #A
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.email == email).all()
         if user:
@@ -92,8 +96,7 @@ class DataBaseManager():
             subject = 'Новый пароль wizard_world'
             msg = MIMEText(m, 'plain', 'utf-8')
             msg['Subject'] = Header(subject, 'utf-8')
-            smtpObj.sendmail("work_smtp_ofkate@mail.ru",
-                             email, msg.as_string())
+            smtpObj.sendmail("work_smtp_ofkate@mail.ru", email, msg.as_string())
             smtpObj.quit()
             ash_2 = login + password
             ash_2 = hashlib.md5(ash_2.encode())
@@ -105,7 +108,7 @@ class DataBaseManager():
             return 'wrong email'
 
     @staticmethod
-    def change_password(login, email, old_password, new_password):  # A
+    def change_password(login, email, old_password, new_password): #A
         ash = login + old_password
         ash = hashlib.md5(ash.encode())
         ash = ash.hexdigest()
@@ -129,29 +132,27 @@ class DataBaseManager():
             return 'нет такого пользователя'
 
     @staticmethod
-    def is_okay(key):  # my
+    def is_okay(key): #my
         if len(key) > 9 and not key.isalnum():
             return True
         return False
 
     @staticmethod
-    def add_to_favourite_spell(uuid, user_id):  # A
+    def add_to_favourite_spell(uuid, user_id): #A
         date = dt.datetime.now().date()
-        fs = data_base_create.FavouriteSpells(
-            user_id=user_id, spell_uuid=uuid, active=1, date=str(date))
+        fs = data_base_create.FavouriteSpells(user_id=user_id, spell_uuid=uuid, active=1, date=str(date))
         DataBaseManager.session.add(fs)
         DataBaseManager.session.commit()
 
     @staticmethod
-    def add_to_favourite_potion(uuid, user_id):  # A
+    def add_to_favourite_potion(uuid, user_id): #A
         date = dt.datetime.now().date()
-        fp = data_base_create.FavouritePotions(
-            user_id=user_id, potion_uuid=uuid, active=1, date=str(date))
+        fp = data_base_create.FavouritePotions(user_id=user_id, potion_uuid=uuid, active=1, date=str(date))
         DataBaseManager.session.add(fp)
         DataBaseManager.session.commit()
 
     @staticmethod
-    def all_favourite(user_id):  # A
+    def all_favourite(user_id): #A
         fav_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
             data_base_create.FavouriteSpells.user_id == user_id).filter(
             data_base_create.FavouriteSpells.active == 1).all()
@@ -168,7 +169,7 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def potions_favourite(user_id):  # A
+    def potions_favourite(user_id): #A
         a = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
             data_base_create.FavouritePotions.user_id == user_id).filter(
             data_base_create.FavouritePotions.active == 1).all()
@@ -178,7 +179,7 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def spells_favourite(user_id):  # A
+    def spells_favourite(user_id): #A
         a = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
             data_base_create.FavouriteSpells.user_id == user_id).filter(
             data_base_create.FavouriteSpells.active == 1).all()
@@ -188,19 +189,18 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def get_user_info(email):  # A
+    def get_user_info(email): #A
         user = DataBaseManager.session.query(data_base_create.User).filter(
             data_base_create.User.email == email).all()
         if user:
             user = user[0]
-            js = {'id': user.id, 'name': user.name,
-                  'email': user.email, 'avatar': user.avatar_file}
+            js = {'id': user.id, 'name': user.name, 'email': user.email, 'avatar': user.avatar_file}
             return js
         else:
             return 0
 
     @staticmethod
-    def get_random_types(num):  # A
+    def get_random_types(num): #A
         all_types = DataBaseManager.session.query(data_base_create.User).all()
         random.shuffle(all_types)
         types = []
@@ -209,34 +209,37 @@ class DataBaseManager():
         return types
 
     @staticmethod
-    def add_to_viewed_potions(uuid, user_id):  # A
+    def add_to_viewed_potions(uuid, user_id):#A
         date = dt.datetime.now().date()
-        fp = data_base_create.ViewedPotions(
-            user_id=user_id, potion_uuid=uuid, date=str(date))
+        fp = data_base_create.ViewedPotions(user_id=user_id, potion_uuid=uuid, date=str(date))
         DataBaseManager.session.add(fp)
         DataBaseManager.session.commit()
 
     @staticmethod
-    def add_to_viewed_spells(uuid, user_id):  # A
+    def add_to_viewed_spells(uuid, user_id): #A
         date = dt.datetime.now().date()
-        fp = data_base_create.ViewedSpells(
-            user_id=user_id, spell_uuid=uuid, date=str(date))
+        fp = data_base_create.ViewedSpells(user_id=user_id, spell_uuid=uuid, date=str(date))
         DataBaseManager.session.add(fp)
         DataBaseManager.session.commit()
 
     @staticmethod
-    def find_spell(id):  # my
+    def find_spell(id): #my
+        print(id, 6786)
         req = 'https://wizard-world-api.herokuapp.com/Spells'
         spells = requests.get(req).json()
         for spell in spells:
+            print(99)
+            print(spell['id'], 888)
             if spell['id'] == id:
+                print(888)
                 return spell
+
         return None
 
     @staticmethod
-    def find_potion(id):  # my
+    def find_potion(id): #my
         print(id)
-        req = 'https://wizard-world-api.herokuapp.com/Elixirs'
+        req ='https://wizard-world-api.herokuapp.com/Elixirs'
         response = requests.get(req)
         print(response.url)
         #potions = potions.json()
@@ -247,25 +250,23 @@ class DataBaseManager():
         return None
 
     @staticmethod
-    def add_potion(potion):  # my
+    def add_potion(potion): #my
         sp = DataBaseManager.session.query(data_base_create.Potions).filter(
             data_base_create.Potions.uuid == potion['id']).all()
         if sp:
             pass
         else:
-            ingr = ', '.join(
-                list(map(lambda x: x['name'], potion['ingredients'])))
-            inv = ', '.join(
-                list(map(lambda x: x['firstName'] + ' ' + x['lastName'], potion['inventors'])))
+            ingr = ', '.join(list(map(lambda x: x['name'], potion['ingredients'])))
+            inv = ', '.join(list(map(lambda x: x['firstName'] + ' ' + x['lastName'], potion['inventors'])))
             pt = data_base_create.Potions(uuid=potion['id'], name=potion['name'], effect=potion['effect'], sideEffects=potion['sideEffects'],
-                                          characteristics=potion['characteristics'], time=potion[
-                                              'time'], difficulty=potion['difficulty'],
+                                          characteristics=potion['characteristics'], time=potion['time'], difficulty=potion['difficulty'],
                                           ingredients=ingr, inventors=inv, manufacturer=potion['manufacturer'])
             DataBaseManager.session.add(pt)
             DataBaseManager.session.commit()
 
     @staticmethod
-    def add_spell(spell):  # my
+    def add_spell(spell): #my
+        print(spell, 777)
         sp = DataBaseManager.session.query(data_base_create.Spells).filter(
             data_base_create.Spells.uuid == spell['id']).all()
         if sp:
@@ -280,7 +281,7 @@ class DataBaseManager():
             DataBaseManager.session.commit()
 
     @staticmethod
-    def get_potion(id):  # Alina
+    def get_potion(id): #Alina
         pt = DataBaseManager.session.query(data_base_create.Potions).filter(
             data_base_create.Potions.uuid == id).all()
         if pt:
@@ -303,10 +304,11 @@ class DataBaseManager():
                   'manufacturer': pt.manufacturer, 'picture': pt.picture}
         return qu
 
-    @staticmethod  # Alina
+    @staticmethod #Alina
     def get_spell(id):
         sp = DataBaseManager.session.query(data_base_create.Spells).filter(
             data_base_create.Spells.uuid == id).all()
+        print(sp, 111)
         if sp:
             sp = sp[0]
             qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
@@ -315,6 +317,7 @@ class DataBaseManager():
         else:
             a = DataBaseManager()
             spell = a.find_spell(id)
+            print(spell, 555)
             a.add_spell(spell)
             sp = DataBaseManager.session.query(data_base_create.Spells).filter(
                 data_base_create.Spells.uuid == id).all()
@@ -322,9 +325,10 @@ class DataBaseManager():
             qu = {'uuid': sp.uuid, 'name': sp.name, 'incantation': sp.incantation,
                   'effect': sp.effect, 'canBeVerbal': sp.canBeVerbal, 'type': sp.type,
                   'light': sp.light, 'picture': sp.picture}
+        print(qu)
         return qu
 
-    @staticmethod  # Alina
+    @staticmethod #Alina
     def get_spell_by_type(type):
         sp = DataBaseManager.session.query(data_base_create.Spells).filter(
             data_base_create.Spells.type == type).all()
@@ -333,11 +337,10 @@ class DataBaseManager():
         spells = list(filter(lambda x: x['type'] == type, spells))
         a = []
         for spell in spells:
-            a.append(
-                {'uuid': spell['id'], 'name': spell['name'], 'effect': spell['effect']})
+            a.append({'uuid': spell['id'], 'name': spell['name'], 'effect': spell['effect']})
         return a
 
-    @staticmethod  # Alina
+    @staticmethod #Alina
     def get_all_spells():
         req = 'https://wizard-world-api.herokuapp.com/Spells'
         spells = requests.get(req).json()
@@ -396,8 +399,64 @@ class DataBaseManager():
             subject = 'wizard_world new email'
             msg = MIMEText(m, 'plain', 'utf-8')
             msg['Subject'] = Header(subject, 'utf-8')
-            smtpObj.sendmail("work_smtp_ofkate@mail.ru",
-                             new_email, msg.as_string())
+            smtpObj.sendmail("work_smtp_ofkate@mail.ru", new_email, msg.as_string())
             smtpObj.quit()
         else:
             return 'Неправильная почта'
+
+    @staticmethod
+    def all_viewed(user_id):  # A
+        v_spells = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+            data_base_create.FavouriteSpells.user_id == user_id).filter(
+            data_base_create.FavouriteSpells.active == 1).all()
+        v_potions = DataBaseManager.session.query(data_base_create.ViewedPotions).filter(
+            data_base_create.ViewedPotions.user_id == user_id).all()
+        a = v_potions + v_spells
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            if isinstance(a[i], data_base_create.ViewedSpells):
+                a[i] = a[i].spell_uuid
+            else:
+                a[i] = a[i].potion_uuid
+        return a
+
+    @staticmethod
+    def potions_viewed(user_id):  # A
+        a = DataBaseManager.session.query(data_base_create.ViewedPotions).filter(
+            data_base_create.ViewedPotions.user_id == user_id).all()
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            a[i] = a[i].potion_uuid
+        return a
+
+    @staticmethod
+    def spells_viewed(user_id):  # A
+        a = DataBaseManager.session.query(data_base_create.ViewedSpells).filter(
+            data_base_create.ViewedSpells.user_id == user_id).all()
+        a = sorted(a, key=lambda x: x.date)
+        for i in range(len(a)):
+            a[i] = a[i].spell_uuid
+        return a
+
+    @staticmethod
+    def delete_from_favourite_spell(uuid, user_id):  # A
+        fs = DataBaseManager.session.query(data_base_create.FavouriteSpells).filter(
+            data_base_create.FavouriteSpells.user_id == user_id).filter(
+            data_base_create.FavouriteSpells.spell_uuid == uuid).one()
+        fs.active = 0
+        DataBaseManager.session.commit()
+
+    @staticmethod
+    def delete_from_favourite_potion(uuid, user_id):  # A
+        fs = DataBaseManager.session.query(data_base_create.FavouritePotions).filter(
+            data_base_create.FavouritePotions.user_id == user_id).filter(
+            data_base_create.FavouritePotions.potion_uuid == uuid).one()
+        fs.active = 0
+        DataBaseManager.session.commit()
+
+
+
+
+
+a = DataBaseManager()
+print(a.get_spell('fbd3cb46-c174-4843-a07e-fd83545dce58'))
