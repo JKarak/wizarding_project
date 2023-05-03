@@ -52,7 +52,7 @@
 						</div>
 						<div class="col-lg-2 col-md-12 d-none d-lg-block">
 							<hr class="margin-bottom-0px d-block d-sm-none">
-							<a href="page-login.html"
+							<a href="/acc"
 								class="text-white ba-1 box-shadow float-right padding-lr-23px padding-tb-15px text-extra-large"><i
 									class="far fa-user"></i></a>
 						</div>
@@ -73,11 +73,11 @@
 	<div class="container margin-bottom-100px">
 
 		<div class="recipes-masonry row">
-			{% for item in range(20) %}
+			{% for item in range(len_spells) %}
 			<!-- Recipe Item -->
 			<div class="col-xl-3 col-lg-4 col-md-6 recipe-item margin-bottom-40px">
 				<div class="card border-0 box-shadow">
-					<div class="card-img-top"><a href="#"><img src="http://placehold.it/420x335" alt=""></a></div>
+					<div class="card-img-top"><a href="#"></a></div>
 					<div class="padding-lr-30px padding-tb-20px">
 						<h5 class="margin-bottom-20px margin-top-10px"><a class="text-dark"
 								href="/{{ page[item] }}/{{ ids[item] }}"> {{titles[item] }}</a></h5>
@@ -88,8 +88,8 @@
 						</div>
 					</div>
 					<div class="background-light-grey border-top-1 border-grey padding-lr-30px padding-tb-20px">
-						<a href="#" class="d-inline-block text-grey-3 h6 margin-bottom-0px margin-right-15px"><img
-								class="height-30px border-radius-30 margin-right-15px" alt=""> {{ effects[item] }}</a>
+						<a class="d-inline-block text-grey-3 h6 margin-bottom-0px margin-right-15px"> {{
+							effects[item] }} </a>
 					</div>
 				</div>
 			</div>

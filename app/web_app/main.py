@@ -227,6 +227,7 @@ def category(spell_type: str):
         page = []
         req = f'http://127.0.0.1:5000/spellsbytype/{spell_type}'
         spells = requests.get(req).json()
+        len_spells = len(spells)
         for spell in spells:
             page.append('spells')
             ids.append(spell['uuid'])
@@ -236,7 +237,8 @@ def category(spell_type: str):
         params = {'effects': effects,
                   'titles': titles,
                   'ids': ids,
-                  'page': page
+                  'page': page,
+                  'len_spells': len_spells
                   }
         return render_template('category.html', **params)
     else:
@@ -275,7 +277,8 @@ def search():
         params = {'Name': keywords}
         req = f'https://wizard-world-api.herokuapp.com/{category}'
         response = requests.get(req, params=params)
-        spells = response.json()[0:2]
+        spells = response.json()
+        len_spells = len(spells)
         for spell in spells:
             page.append('spells')
             ids.append(spell['id'])
@@ -286,7 +289,8 @@ def search():
             'effects': effects,
             'titles': titles,
             'ids': ids,
-            'page': page
+            'page': page,
+            'len_spells': len_spells
         }
         return render_template('search.html', **params)
     else:
