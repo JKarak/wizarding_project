@@ -51,9 +51,9 @@ class UserRegistration(Resource):
 
 
 class UserInfo(Resource):
-    def get(self, email):
-        if dbm.get_user_info(email):
-            response = dbm.get_user_info(email)
+    def get(self, name):
+        if dbm.get_user_info(name):
+            response = dbm.get_user_info(name)
         else:
             response = jsonify({'result': 'not ok'})
             response.status_code = 404
@@ -262,7 +262,7 @@ class SpellsList(Resource):
 
 api.add_resource(UserAuth, '/user/auth')
 api.add_resource(UserRegistration, '/user/registration')
-api.add_resource(UserInfo, '/user/<string:email>/info')
+api.add_resource(UserInfo, '/user/<string:name>/info')
 api.add_resource(NewAvatar, '/user/<string:email>/changeavatar')
 api.add_resource(ForgotPassword, '/user/<string:login>/forgotpassword')
 api.add_resource(FavouriteSpells, '/user/<string:user_id>/favourite/spells')
