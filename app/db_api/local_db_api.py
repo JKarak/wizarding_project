@@ -189,9 +189,9 @@ class DataBaseManager():
         return a
 
     @staticmethod
-    def get_user_info(email): #A
+    def get_user_info(name): #A
         user = DataBaseManager.session.query(data_base_create.User).filter(
-            data_base_create.User.email == email).all()
+            data_base_create.User.name == name).all()
         if user:
             user = user[0]
             js = {'id': user.id, 'name': user.name, 'email': user.email, 'avatar': user.avatar_file}
