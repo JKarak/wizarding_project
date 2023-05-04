@@ -2,11 +2,10 @@
 <html lang="en-US">
 
 <head>
-	<title>Cook Note - Food Recipes HTML Template</title>
+	<title>Best Harry Potter site ever!</title>
 	<meta name="author" content="Nile-Theme">
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<meta name="keywords" content="recipes food, recipes , chinese food, italian food">
-	<meta name="description" content="Cook Note - Food & Recipes Food Template">
+	<meta name="keywords" content="parry potter, spells, poisons">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- google fonts -->
 	<link
@@ -21,8 +20,6 @@
 	<link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
 	<!-- hover anmation -->
 	<link rel="stylesheet" href="/static/assets/css/hover-min.css">
-	<!-- flag icon -->
-	<link rel="stylesheet" href="/static/assets/css/flag-icon.min.css">
 	<!-- main style -->
 	<link rel="stylesheet" href="/static/assets/css/style.css">
 	<!-- colors -->
@@ -35,7 +32,6 @@
 </head>
 
 <body>
-
 	<header class="background-main-color">
 		<div class="container">
 			<div class="header-output">
@@ -67,6 +63,18 @@
 	<!-- // Header  -->
 	<div class="banner padding-tb-20px">
 		<div class="container">
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+				<ul class="flashes list-group">
+					{% for message in messages %}
+					<li class="list-group-item">
+						<div class="alert alert-danger">{{message}}</div>
+					</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+			{% endwith %}
+
 			<div class="z-index-2 position-relative">
 				<div class="text-center">
 					<h3 class="text-black icon-large font-weight-100">Best Harry Potter site ever!</h3>
@@ -145,7 +153,7 @@
 	</div>
 
 
-	<section class="padding-tb-100px background-light-grey">
+	<section class="padding-tb-60px background-light-grey">
 		<div class="container">
 			<div class="title text-center">
 				<h2 class="font-weight-700 text-main-color">Favourite Spells and Potions</h2>
@@ -180,13 +188,11 @@
 				</div>
 				<!-- // Recipe Item -->
 				{% endfor %}
-
-
-
 			</div>
 		</div>
 		<!-- // container -->
 	</section>
+
 	<script src="/static/assets/js/jquery-3.2.1.min.js"></script>
 	<script src="/static/assets/js/sticky-sidebar.js"></script>
 	<script src="/static/assets/js/YouTubePopUp.jquery.js"></script>
@@ -197,6 +203,11 @@
 	<script src="/static/assets/js/custom.js"></script>
 	<script src="/static/assets/js/popper.min.js"></script>
 	<script src="/static/assets/js/bootstrap.min.js"></script>
+	<script>
+		window.setTimeout(function () {
+			$(".flashed").fadeTo(500, 0)
+		}, 4000);		
+	</script>
 </body>
 
 </html>

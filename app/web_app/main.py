@@ -1,302 +1,342 @@
-from flask import Flask, render_template, redirect, session, request, url_for
+import datetime
+import base64
+import requests
+from flask import (Flask, render_template, redirect, session, request, url_for, flash)
 from forms import Login, Register, FindSpells
 
-import datetime
-import requests
-import base64
-import os
+
+__WEB_API_URL = "http://127.0.0.1:5000"
+__WEB_API_TIMEOUT = 10
+
+__WIZARD_WORLD_API_URL = "https://wizard-world-api.herokuapp.com"
+__WIZARD_WORLD_API_TIMEOUT = 20
+
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "yandexlyceum_secret_key"
+app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(days=365)
 
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
 
-
-@app.route('/login', methods=["GET", "POST"])
-def signIn():
+@app.route("/login", methods=["GET", "POST"])
+def sign_in():
     user = session.get("usename")
-
     if user:
-        return redirect('/')
-    else:
-        form = Login()
-        wrong_password = ' '
+        return redirect("/")
 
-        if form.validate_on_submit():
-            print('ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ')
-            data = {
-                "login": form.login.data,
-                "password": form.password.data
-            }
+    form = Login()
+    wrong_password = " "
 
-            req = 'http://127.0.0.1:5000/user/auth'
-            resp = requests.get(req, params=data)
-            print(resp.url)
-
-            if resp:
-                session['username'] = data['login']
-                print(session.get('username'))
-                return redirect('/')
-            else:
-                wrong_password = 'Неправильное имя пользователя, логин или пароль'
-        return render_template('login.html', form=form, wrong_password=wrong_password)
-
-
-@app.route('/register', methods=["GET", "POST"])
-def signUp():
-    user = session.get("usename")
-
-    if user:
-        return redirect('/')
-    else:
-        form = Register()
-        wrong_password = ' '
-
-        if form.validate_on_submit():
-            buff = form.avatar.data.read()
-            data = {
-                "name": form.name.data,
-                "login": form.login.data,
-                "key": form.password.data,
-                "email": form.email.data,
-                "avatar": base64.b64encode(buff).decode("utf-8")
-            }
-
-            req = 'http://127.0.0.1:5000/user/registration'
-            try:
-                response = requests.post(req, json=data, timeout=1.5)
-                print(response)
-                if response:
-                    session['username'] = data['login']
-                    return redirect('/')
-                else:
-                    wrong_password = 'Неправильное имя пользователя, логин или пароль'
-            except requests.Timeout:
-                wrong_password = 'Сервер регистрации не доступен'
-
-        return render_template('register.html', form=form, wrong_password=wrong_password)
-
-
-# основная страница
-@app.route('/', methods=["GET", "POST"])
-def main():
-
-    print(session.items())
-
-    if 'username' in session:
-
-        form = FindSpells()
-        if form.validate_on_submit():
-            params = {'keywords': form.keywords.data,
-                      'category': form.category.data}
-
-            return redirect(url_for('search', **params))
-
-        req = 'https://wizard-world-api.herokuapp.com/Spells'
-        find = requests.get(req, params={'name': ''})
-
-        '''req2 = f'http://jusrager.pythonanywhere.com/api/v1/user/{login}/favourite/spells'
-        spells_favourite = requests.get(req2)
-        !!!!!!!!!!!!!!!!!!!!!!!!!!spells_count_fav = spells_favourite.json()['spells']
-
-        req3 = f'http://jusrager.pythonanywhere.com/api/v1/user/{login}/favourite/potions'
-        potions_favourite = requests.get(req3)
-        !!!!!!!!!!!!!!!!!!!!!!!!!!!potions_count_fav = potions_favourite.json()['spells']'''
-        user = session["username"]
-        print(user)
-        effects = []
-        titles = []
-        ids = []
-        page = []
-        req = f'http://127.0.0.1:5000/user/{user}/favourite/spells'
-        spells = requests.get(
-            req, headers={'Content-Type': 'application/json'})
-        if spells:
-            for spell in spells.json():
-                page.append('spells')
-                ids.append(spell['id'])
-                titles.append(spell['name'])
-                effects.append(spell['effect'])
-        else:
-            req = 'https://wizard-world-api.herokuapp.com/Spells'
-            spells = requests.get(
-                req, headers={'Content-Type': 'application/json'})
-            for spell in spells.json()[0:4]:
-                page.append('spells')
-                ids.append(spell['id'])
-                titles.append(spell['name'])
-                effects.append(spell['effect'])
-
-        req = f'http://127.0.0.1:5000/user/{user}/favourite/potions'
-        potions = requests.get(
-            req, headers={'Content-Type': 'application/json'})
-        if potions:
-            for potion in potions.json():
-                page.append('potions')
-                ids.append(potion['id'])
-                titles.append(potion['name'])
-                effects.append(potion['effect'])
-        else:
-            req = 'https://wizard-world-api.herokuapp.com/Elixirs'
-            potions = requests.get(
-                req, headers={'Content-Type': 'application/json'})
-            for potion in potions.json()[0:4]:
-                page.append('potions')
-                ids.append(potion['id'])
-                titles.append(potion['name'])
-                effects.append(potion['effect'])
-
-        params = {'form': form,
-                  'effects': effects,
-                  'titles': titles,
-                  'ids': ids,
-                  'page': page
-                  }
-
-        return render_template('index.html', **params)
-    else:
-        return redirect('/login')
-
-
-@app.route('/spells/<id>')
-def spells(id):
-    if 'username' in session:
-        # req = f''
-        # data = requests.get(req)
-        # info = data.json()
-
-        info = {"id": id,
-                "name": 1,
-                "effect": 2,
-                "sideEffects": 3,
-                "characteristics": 4,
-                "time": 5,
-                "difficulty": 6,
-                "ingredients": 7}
-
-        params = {"id": id,
-                  "name": info['name'],
-                  "effect": info['effect'],
-                  "sideEffects": info['sideEffects'],
-                  "characteristics": info['characteristics'],
-                  "time": info['time'],
-                  "difficulty": info['difficulty'],
-                  "ingredients": info['ingredients']}
-
-        return render_template('spells.html', **params)
-    else:
-        return redirect('/login')
-
-
-@app.route('/potions/<id>')
-def potions(id):
-    if 'username' in session:
-        # req = f''
-        # data = requests.get(req)
-        # info = data.json()
-
-        info = {"id": id,
-                "name": 1,
-                "incantation": 2,
-                "effect": 3,
-                "canBeVerbal": 4,
-                "type": 5,
-                "light": 6,
-                }
-
-        params = {"id": id,
-                  "name": info['name'],
-                  "incantation": info['incantation'],
-                  "effect": info['effect'],
-                  "canBeVerbal": info['canBeVerbal'],
-                  "type": info['type'],
-                  "light": info['light'],
-                  }
-
-        return render_template('potions.html', **params)
-    else:
-        return redirect('/login')
-
-
-@app.route('/category/<spell_type>')
-def category(spell_type: str):
-    if 'username' in session:
-        spell_type = spell_type.capitalize()
-        effects = []
-        titles = []
-        ids = []
-        page = []
-        req = f'http://127.0.0.1:5000/spellsbytype/{spell_type}'
-        spells = requests.get(req).json()
-        len_spells = len(spells)
-        for spell in spells:
-            page.append('spells')
-            ids.append(spell['uuid'])
-            titles.append(spell['name'])
-            effects.append(spell['effect'])
-
-        params = {'effects': effects,
-                  'titles': titles,
-                  'ids': ids,
-                  'page': page,
-                  'len_spells': len_spells
-                  }
-        return render_template('category.html', **params)
-    else:
-        return redirect('/login')
-
-
-@app.route('/acc')
-def acc():
-    if 'username' in session:
-        # req = 'https://wizard-world-api.herokuapp.com/Spells'
-        # info = requests.get(req).json()
-
-        info = {'name': 1,
-                'number_of_favorites': 2}
-
-        params = {
-            'name': info['name'],
-            # 'avatar': avatar,
-            'number_of_favorites': info['number_of_favorites']
+    if form.validate_on_submit():
+        data = {
+            "login": form.login.data,
+            "password": form.password.data
         }
 
-        return render_template('acc.html', **params)
+        req = f"{__WEB_API_URL}/user/auth"
+        response = requests.get(req, params=data, timeout=__WEB_API_TIMEOUT)
+        if response:
+            session["username"] = data["login"]
+            return redirect("/")
+
+        wrong_password = "Неправильное имя пользователя, логин или пароль"
+
+    return render_template("login.html", form=form, wrong_password=wrong_password)
+
+
+@app.route("/register", methods=["GET", "POST"])
+def sign_up():
+    user = session.get("usename")
+    if user:
+        return redirect("/")
+
+    form = Register()
+    if form.validate_on_submit():
+        avatar_buffer = form.avatar.data.read()
+        data = {
+            "name": form.name.data,
+            "login": form.login.data,
+            "key": form.password.data,
+            "email": form.email.data,
+            "avatar": base64.b64encode(avatar_buffer).decode("utf-8"),
+        }
+
+        req = f"{__WEB_API_URL}/user/registration"
+        try:
+            response = requests.post(req, json=data, timeout=__WEB_API_TIMEOUT)
+            if response:
+                session["username"] = data["login"]
+                return redirect("/")
+
+            flash("Неправильное имя пользователя, логин или пароль", category='error')
+        except requests.Timeout:
+            flash("Сервер регистрации временно не доступен", category='error')
+
+    return render_template("register.html", form=form)
+
+
+@app.route("/", methods=["GET", "POST"])
+def main():
+    if "username" not in session:
+        return redirect("/login")
+
+    form = FindSpells()
+    if form.validate_on_submit():
+        params = {
+            "keywords": form.keywords.data,
+            "category": form.category.data
+        }
+
+        return redirect(url_for("search", **params))
+
+    user = session["username"]
+
+    effects = []
+    titles = []
+    ids = []
+    page = []
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    req = f"{__WEB_API_URL}/user/{user}/favourite/spells"
+    spells = requests.get(req, headers=headers, timeout=__WEB_API_TIMEOUT)
+    if spells:
+        for spell in spells.json():
+            page.append("spells")
+            ids.append(spell["id"])
+            titles.append(spell["name"])
+            effects.append(spell["effect"])
     else:
-        return redirect('/login')
+        req = f"{__WIZARD_WORLD_API_URL}/Spells"
+        spells = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+        for spell in spells.json()[0:4]:
+            page.append("spells")
+            ids.append(spell["id"])
+            titles.append(spell["name"])
+            effects.append(spell["effect"])
+
+    req = f"{__WEB_API_URL}/user/{user}/favourite/potions"
+    potions = requests.get(req, headers=headers, timeout=__WEB_API_TIMEOUT)
+    if potions:
+        for potion in potions.json():
+            page.append("potions")
+            ids.append(potion["id"])
+            titles.append(potion["name"])
+            effects.append(potion["effect"])
+    else:
+        req = f"{__WIZARD_WORLD_API_URL}/Elixirs"
+        potions = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+        for potion in potions.json()[0:4]:
+            page.append("potions")
+            ids.append(potion["id"])
+            titles.append(potion["name"])
+            effects.append(potion["effect"])
+
+    params = {
+        "form": form,
+        "effects": effects,
+        "titles": titles,
+        "ids": ids,
+        "page": page,
+    }
+
+    return render_template("index.html", **params)
 
 
-@app.route('/search')
-def search():
-    if 'username' in session:
-        keywords = request.args.get('keywords')
-        category = request.args.get('category')
-        effects = []
-        titles = []
-        ids = []
-        page = []
-        params = {'Name': keywords}
-        req = f'https://wizard-world-api.herokuapp.com/{category}'
-        response = requests.get(req, params=params)
+@app.route("/spells/<string:id>")
+def spells(id: str):
+    if "username" not in session:
+        return redirect("/login")
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    req = f"{__WEB_API_URL}/spells/{id}"
+    response = requests.get(req, headers=headers, timeout=__WEB_API_TIMEOUT)
+    if response:
+        spell = response.json()
+        params = {
+            'id': spell['uuid'],
+            'name': spell['name'],
+            'incantation': spell['incantation'],
+            'effect': spell['effect'],
+            'canBeVerbal': spell['canBeVerbal'],
+            'type': spell['type'],
+            'light': spell['light']
+        }
+        # 'picture': spell['picture']
+
+        return render_template("spells.html", **params)
+
+    req = f"{__WIZARD_WORLD_API_URL}/Spells/{id}"
+    response = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+    if response:
+        spell = response.json()
+        params = {
+            'id': spell['id'],
+            'name': spell['name'],
+            'incantation': spell['incantation'],
+            'effect': spell['effect'],
+            'canBeVerbal': spell['canBeVerbal'],
+            'type': spell['type'],
+            'light': spell['light'],
+            'creator': spell['creator']
+        }
+
+        return render_template("spells.html", **params)
+
+    flash('The requested spell was not found!', category='error')
+    return redirect('/')
+
+
+@app.route("/potions/<string:id>")
+def potions(id: str):
+    if "username" not in session:
+        return redirect("/login")
+
+        # potion
+        # qu = {'uuid': pt.uuid, 'name': pt.name, 'effect': pt.effect,
+        #       'sideEffects': pt.sideEffects, 'characteristics': pt.characteristics, 'time': pt.time,
+        #       'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
+        #       'manufacturer': pt.manufacturer, 'picture': pt.picture}
+
+
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    req = f"{__WEB_API_URL}/potions/{id}"
+    response = requests.get(req, headers=headers, timeout=__WEB_API_TIMEOUT)
+    if response:
+        spell = response.json()
+        params = {
+            'id': spell['uuid'],
+            'name': spell['name'],
+            'effect': spell['effect'],
+            'sideEffects': spell['sideEffects'],
+            'characteristics': spell['characteristics'],
+            'time': spell['time'],
+            'difficulty': spell['difficulty'],
+            'manufacturer': spell['manufacturer']
+        }
+        # 'picture': spell['picture']
+
+        return render_template("potions.html", **params)
+
+    req = f"{__WIZARD_WORLD_API_URL}/Elixirs/{id}"
+    response = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+    if response:
+        spell = response.json()
+        params = {
+            'id': spell['id'],
+            'name': spell['name'],
+            'effect': spell['effect'],
+            'sideEffects': spell['sideEffects'],
+            'characteristics': spell['characteristics'],
+            'time': spell['time'],
+            'difficulty': spell['difficulty'],
+            'manufacturer': spell['manufacturer']
+        }
+
+        return render_template("potions.html", **params)
+
+    flash('The requested potion was not found!', category='error')
+    return redirect('/')
+
+
+@app.route("/category/<string:spell_type>")
+def category(spell_type: str):
+    if "username" not in session:
+        return redirect("/login")
+
+    effects = []
+    titles = []
+    ids = []
+    page = []
+    len_spells = 0
+
+    req = f"{__WEB_API_URL}/spellsbytype/{spell_type.capitalize()}"
+    response = requests.get(req, timeout=__WEB_API_TIMEOUT)
+    if response:
         spells = response.json()
         len_spells = len(spells)
         for spell in spells:
-            page.append('spells')
-            ids.append(spell['id'])
-            titles.append(spell['name'])
-            effects.append(spell['effect'])
+            page.append("spells")
+            ids.append(spell["uuid"])
+            titles.append(spell["name"])
+            effects.append(spell["effect"])
 
-        params = {
-            'effects': effects,
-            'titles': titles,
-            'ids': ids,
-            'page': page,
-            'len_spells': len_spells
-        }
-        return render_template('search.html', **params)
-    else:
-        return redirect('/login')
+    params = {
+        "effects": effects,
+        "titles": titles,
+        "ids": ids,
+        "page": page,
+        "len_spells": len_spells,
+    }
+
+    return render_template("category.html", **params)
 
 
-if __name__ == '__main__':
-    app.run(port=8080, host='127.0.0.1')
+@app.route("/acc")
+def acc():
+    if "username" not in session:
+        return redirect("/login")
+
+    info = {
+        "name": 1,
+        "number_of_favorites": 2
+    }
+
+    params = {
+        "name": info["name"],
+        # 'avatar': avatar,
+        "number_of_favorites": info["number_of_favorites"],
+    }
+
+    return render_template("acc.html", **params)
+
+
+@app.route("/search")
+def search():
+    if "username" not in session:
+        return redirect("/login")
+
+    effects = []
+    titles = []
+    ids = []
+    page = []
+    len_spells = 0
+
+    keywords = request.args.get("keywords")
+    category = request.args.get("category")
+
+    params = {
+        "Name": keywords
+    }
+    req = f"{__WIZARD_WORLD_API_URL}/{category}"
+    response = requests.get(req, params=params, timeout=__WIZARD_WORLD_API_TIMEOUT)
+    if response:
+        spells = response.json()
+        len_spells = len(spells)
+        for spell in spells:
+            page.append("spells")
+            ids.append(spell["id"])
+            titles.append(spell["name"])
+            effects.append(spell["effect"])
+
+    params = {
+        "effects": effects,
+        "titles": titles,
+        "ids": ids,
+        "page": page,
+        "len_spells": len_spells,
+    }
+
+    return render_template("search.html", **params)
+
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
