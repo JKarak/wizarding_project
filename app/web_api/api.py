@@ -1,10 +1,12 @@
 import werkzeug
 from flask import Flask, jsonify, request
-from flask_restful import reqparse, abort, Api, Resource
+from flask_restful import reqparse, Api, Resource
 
+import sys;
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import sys; sys.path.append('..')
-from db.local_db_api import *
+from db_api.local_db_api import *
 
 app = Flask(__name__)
 api = Api(app)
@@ -273,6 +275,6 @@ api.add_resource(Spell, '/spells/<string:id>')
 api.add_resource(SpellByType, '/spellsbytype/<string:type>')
 api.add_resource(PotionsList, '/potions')
 api.add_resource(SpellsList, '/spells')
-app.run()
+app.run(host='0.0.0.0', port=5000)
 
 # http://127.0.0.1:5000/4?title=werty&content=werty&user_id=234

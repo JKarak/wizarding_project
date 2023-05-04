@@ -2,11 +2,10 @@
 <html lang="en-US">
 
 <head>
-	<title>Cook Note - Food Recipes HTML Template</title>
+	<title>Best Harry Potter site ever!</title>
 	<meta name="author" content="Nile-Theme">
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<meta name="keywords" content="recipes food, recipes , chinese food, italian food">
-	<meta name="description" content="Cook Note - Food & Recipes Food Template">
+	<meta name="keywords" content="parry potter, spells, poisons">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- google fonts -->
 	<link
@@ -21,8 +20,6 @@
 	<link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
 	<!-- hover anmation -->
 	<link rel="stylesheet" href="/static/assets/css/hover-min.css">
-	<!-- flag icon -->
-	<link rel="stylesheet" href="/static/assets/css/flag-icon.min.css">
 	<!-- main style -->
 	<link rel="stylesheet" href="/static/assets/css/style.css">
 	<!-- colors -->
@@ -35,7 +32,6 @@
 </head>
 
 <body>
-
 	<header class="background-main-color">
 		<div class="container">
 			<div class="header-output">
@@ -66,57 +62,58 @@
 	<!-- // Header  -->
 
 	<div id="page-title" class="padding-tb-30px gradient-white">
-		<div class="container text-left">
-
-			<h1 class="font-weight-300">{{name}}</h1>
+		<div class="container">
+			<div style="display: flex; align-items: center;">
+				<img src="{{url_for('static', filename='image/spell_w100.png')}}" alt="">
+				<h1 class="pl-2 font-weight-300">{{name}}</h1>
+			</div>
 		</div>
 	</div>
 
-
 	<div class="container">
 		<div class="row">
-
 			<div class="col-lg-8">
 				<div class="margin-bottom-40px card border-0 box-shadow">
-					<div class="card-img-top"><a href="#"></a></div>
 					<div class="padding-lr-30px padding-tb-20px">
-						<h5 class="margin-bottom-20px margin-top-10px"><a class="text-dark" href="#">{{ name }}</a></h5>
-						<hr>
+						{% if incantation is defined and incantation is not none %}
+						<h3>Incantation</h3>
+						<ul>
+							<li>{{incantation}}</li>
+						</ul>
+						{% endif %}
 						<h3>Effect</h3>
 						<ul>
 							<li>{{effect}}</li>
 						</ul>
-						<h3>Side Effects</h3>
+						<h3>Can be verbal</h3>
 						<ul>
-							<li>{{sideEffects}}</li>
+							<li>{% if canBeVerbal %}Yes{% else %}No{% endif %}</li>
 						</ul>
-						<h3>Characteristics</h3>
+						<h3>Type</h3>
 						<ul>
-							<li>{{characteristics}}</li>
+							<li>{{type}}</li>
 						</ul>
-						<h3>Time</h3>
+						<h3>Light</h3>
 						<ul>
-							<li>{{time}}</li>
+							<li>{{light}}</li>
 						</ul>
-						<h3>Difficulty</h3>
+						{% if creator is defined and creator is not none %}
+						<h3>Creator</h3>
 						<ul>
-							<li>{{difficulty}}</li>
+							<li>{{creator}}</li>
 						</ul>
-						<h3>Ingredients</h3>
-						<ul>
-							<li>{{ingredients}}</li>
-						</ul>
+						{% endif %}
 						<hr>
 						<div class="row no-gutters">
-							<div class="col-4 text-left"><a href="#" class="text-red"><i class="far fa-heart"></i>
-									Save</a></div>
+							<div class="col-4 text-left">
+								<a href="#" class="text-red"><i class="far fa-heart"></i> Save</a>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
 
 	<script src="/static/assets/js/jquery-3.2.1.min.js"></script>
 	<script src="/static/assets/js/sticky-sidebar.js"></script>
