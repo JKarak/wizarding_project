@@ -1,7 +1,8 @@
 import datetime
 import base64
 import requests
-from flask import (Flask, render_template, redirect, session, request, url_for, flash)
+from flask import (Flask, render_template, redirect,
+                   session, request, url_for, flash)
 from forms import Login, Register, FindSpells
 
 
@@ -36,6 +37,10 @@ def sign_in():
         response = requests.get(req, params=data, timeout=__WEB_API_TIMEOUT)
         if response:
             session["username"] = data["login"]
+            req = 'http://127.0.0.1:5000/user/princess_julia/info'
+            inf = requests.get(req).json()
+            print(inf)
+            session["email"] = inf['email']
             return redirect("/")
 
         wrong_password = "Неправильное имя пользователя, логин или пароль"
@@ -65,6 +70,7 @@ def sign_up():
             response = requests.post(req, json=data, timeout=__WEB_API_TIMEOUT)
             if response:
                 session["username"] = data["login"]
+                session['email'] = data['email']
                 return redirect("/")
 
             flash("Неправильное имя пользователя, логин или пароль", category='error')
@@ -109,7 +115,8 @@ def main():
             effects.append(spell["effect"])
     else:
         req = f"{__WIZARD_WORLD_API_URL}/Spells"
-        spells = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+        spells = requests.get(req, headers=headers,
+                              timeout=__WIZARD_WORLD_API_TIMEOUT)
         for spell in spells.json()[0:4]:
             page.append("spells")
             ids.append(spell["id"])
@@ -126,7 +133,8 @@ def main():
             effects.append(potion["effect"])
     else:
         req = f"{__WIZARD_WORLD_API_URL}/Elixirs"
-        potions = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+        potions = requests.get(req, headers=headers,
+                               timeout=__WIZARD_WORLD_API_TIMEOUT)
         for potion in potions.json()[0:4]:
             page.append("potions")
             ids.append(potion["id"])
@@ -171,7 +179,8 @@ def spells(id: str):
         return render_template("spells.html", **params)
 
     req = f"{__WIZARD_WORLD_API_URL}/Spells/{id}"
-    response = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+    response = requests.get(req, headers=headers,
+                            timeout=__WIZARD_WORLD_API_TIMEOUT)
     if response:
         spell = response.json()
         params = {
@@ -202,7 +211,6 @@ def potions(id: str):
         #       'difficulty': pt.difficulty, 'ingredients': pt.ingredients, 'inventors': pt.inventors,
         #       'manufacturer': pt.manufacturer, 'picture': pt.picture}
 
-
     headers = {
         "Content-Type": "application/json"
     }
@@ -226,7 +234,8 @@ def potions(id: str):
         return render_template("potions.html", **params)
 
     req = f"{__WIZARD_WORLD_API_URL}/Elixirs/{id}"
-    response = requests.get(req, headers=headers, timeout=__WIZARD_WORLD_API_TIMEOUT)
+    response = requests.get(req, headers=headers,
+                            timeout=__WIZARD_WORLD_API_TIMEOUT)
     if response:
         spell = response.json()
         params = {
@@ -283,16 +292,13 @@ def category(spell_type: str):
 def acc():
     if "username" not in session:
         return redirect("/login")
-
-    info = {
-        "name": 1,
-        "number_of_favorites": 2
-    }
+    name = session['username']
+    email = session['email']
+    print(email)
 
     params = {
-        "name": info["name"],
-        # 'avatar': avatar,
-        "number_of_favorites": info["number_of_favorites"],
+        "name": name,
+        "email": email
     }
 
     return render_template("acc.html", **params)
@@ -315,16 +321,29 @@ def search():
     params = {
         "Name": keywords
     }
+    if category == 'Potions':
+        category = 'Elixirs'
     req = f"{__WIZARD_WORLD_API_URL}/{category}"
-    response = requests.get(req, params=params, timeout=__WIZARD_WORLD_API_TIMEOUT)
+    response = requests.get(
+        req, params=params, timeout=__WIZARD_WORLD_API_TIMEOUT)
     if response:
-        spells = response.json()
-        len_spells = len(spells)
-        for spell in spells:
-            page.append("spells")
-            ids.append(spell["id"])
-            titles.append(spell["name"])
-            effects.append(spell["effect"])
+        if category == 'Spells':
+            spells = response.json()
+            len_spells = len(spells)
+            for spell in spells:
+                page.append("spells")
+                ids.append(spell["id"])
+                titles.append(spell["name"])
+                effects.append(spell["effect"])
+        elif category == 'Elixirs':
+            print('SSSSSSSSSS')
+            potions = response.json()
+            len_spells = len(potions)
+            for potion in potions:
+                page.append("potions")
+                ids.append(potion["id"])
+                titles.append(potion["name"])
+                effects.append(potion["effect"])
 
     params = {
         "effects": effects,
@@ -335,7 +354,6 @@ def search():
     }
 
     return render_template("search.html", **params)
-
 
 
 if __name__ == "__main__":
